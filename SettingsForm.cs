@@ -10,10 +10,42 @@ using System.Windows.Forms;
 
 namespace SalesTracker
 {
-    public partial class SettingsForm : Form
+    public partial class SettingsForm : Form, INotifyPropertyChanged
     {
-        public SettingsForm() {
+        public event PropertyChangedEventHandler PropertyChanged;
+        private int _gil;
+        private int _sales;
+        public int Gil
+        {
+            get => _gil;
+            set
+            {
+                _gil = value;
+                OnPropertyChanged("Gil");
+            }
+        }
+
+        public int Sales
+        {
+            get => _sales;
+            set
+            {
+                _sales = value;
+                OnPropertyChanged("Sales");
+            }
+        }
+
+        public SettingsForm() 
+        {
             InitializeComponent();
+            gilLabel.DataBindings.Add(new Binding("Text", this, "Gil"));
+            salesLabel.DataBindings.Add(new Binding("Text", this, "Sales"));
+        }
+
+        protected virtual void OnPropertyChanged(string property)
+        {
+            if(PropertyChanged != null)
+                PropertyChanged(this, new PropertyChangedEventArgs(property));
         }
     }
 }

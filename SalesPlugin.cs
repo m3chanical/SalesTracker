@@ -13,9 +13,9 @@ namespace SalesTracker
 {
     public class SalesPlugin : BotPlugin
     {
-        private static int _saleCount;
-        private static int _gil;
+        public int SaleCount { get; set; }
         private readonly Regex _mbRegex = new Regex(@"The (\d*)(.*) you put up for sale in the (.*) markets .* sold for (.*) gil .*", RegexOptions.Compiled); 
+        private SettingsForm form = new SettingsForm();
 
         public override string Author => "Sinbeard";
 
@@ -32,7 +32,6 @@ namespace SalesTracker
 
             try
             {
-                var form = new SettingsForm();
                 form.Show();
             }
             catch (Exception e)
@@ -67,18 +66,19 @@ namespace SalesTracker
                     var match = _mbRegex.Match(e.ChatLogEntry.Contents);
                     if (match.Success)
                     {
-                        _saleCount++;
+                        SaleCount++;
                         var groups = match.Groups;
 
                         var amount = groups[1].ToString() != "" ? int.Parse(groups[1].ToString()) : 1;
                         var item = groups[2].ToString();
                         var price = int.Parse(groups[4].ToString().Replace(",", ""));
-                        _gil += price;
+                        form.Gil += price;
+                        form.Sales++;
                         var market = groups[3].ToString();
 
                         Logger.Info($"{amount} x {item} sold for {price:n0} on {market}\n");
-                        Logger.Info($"You have made {_saleCount} sales, and {_gil:n0} since starting the bot.");
-                        
+                        Logger.Info($"You have made {SaleCount} sales, and {form.Gil:n0} since starting the bot.");
+
                         report_gil();
                     }
                     break;
@@ -93,8 +93,8 @@ namespace SalesTracker
         private void report_gil() 
         {
             Logger.Info("*~*~*~*~*~*~*~*~*~*~");
-            Logger.Info($"Items sold: {_saleCount:n0}");
-            Logger.Info($"Gil obtained: {_gil:n0}");
+            Logger.Info($"Items sold: {SaleCount:n0}");
+            Logger.Info($"Gil obtained: {form.Gil:n0}");
             Logger.Info("*~*~*~*~*~*~*~*~*~*~");
         }
 
