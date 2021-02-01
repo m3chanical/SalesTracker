@@ -38,7 +38,7 @@ namespace SalesTracker
         public SettingsForm() 
         {
             InitializeComponent();
-            gilLabel.DataBindings.Add(new Binding("Text", this, "Gil"));
+            gilLabel.DataBindings.Add(new Binding("Text", this, "Gil", true, DataSourceUpdateMode.OnPropertyChanged, "", "n0"));
             salesLabel.DataBindings.Add(new Binding("Text", this, "Sales"));
         }
 

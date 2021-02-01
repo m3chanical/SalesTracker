@@ -80,6 +80,7 @@ namespace SalesTracker
                         Logger.Info($"You have made {SaleCount} sales, and {form.Gil:n0} since starting the bot.");
 
                         report_gil();
+                        
                     }
                     break;
                 case MessageType.Tell_Receive:
