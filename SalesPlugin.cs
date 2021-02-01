@@ -13,9 +13,9 @@ namespace SalesTracker
 {
     public class SalesPlugin : BotPlugin
     {
-        private static int sale_count;
-        private static int gil;
-        private readonly Regex gil_regex = new Regex(@"The (\d*) (.*) you put up for sale in the (.*) markets have sold for (\d*,*\d*,*\d*) gil .*", RegexOptions.Compiled); 
+        private static int _saleCount;
+        private static int _gil;
+        private readonly Regex _mbRegex = new Regex(@"The (\d*)(.*) you put up for sale in the (.*) markets .* sold for (.*) gil .*", RegexOptions.Compiled); 
 
         public override string Author => "Sinbeard";
 
@@ -61,21 +61,24 @@ namespace SalesTracker
             switch(e.ChatLogEntry.MessageType)
             {
                 case MessageType.RetainerSaleReports:
-                    sale_count++;
                     Logger.Info("Market Board sale made.");
                     Logger.Verbose($"Cool Sales Message: " + e.ChatLogEntry.Contents);
 
-                    var matches = gil_regex.Match(e.ChatLogEntry.Contents);
-                    if (matches.Success)
+                    var match = _mbRegex.Match(e.ChatLogEntry.Contents);
+                    if (match.Success)
                     {
-                        var groups = matches.Groups;
-                        var amount = int.Parse(groups[0].ToString().Replace(",", ""));
-                        Logger.Verbose($"Received {amount:n0} from the sale. Adding to total...");
+                        _saleCount++;
+                        var groups = match.Groups;
 
-                        gil += amount;
+                        var amount = groups[1].ToString() != "" ? int.Parse(groups[1].ToString()) : 1;
+                        var item = groups[2].ToString();
+                        var price = int.Parse(groups[4].ToString().Replace(",", ""));
+                        _gil += price;
+                        var market = groups[3].ToString();
 
-                        Logger.Info($"You have made {sale_count} sales, and {gil:n0} since starting the bot.");
-
+                        Logger.Info($"{amount} x {item} sold for {price:n0} on {market}\n");
+                        Logger.Info($"You have made {_saleCount} sales, and {_gil:n0} since starting the bot.");
+                        
                         report_gil();
                     }
                     break;
@@ -90,8 +93,8 @@ namespace SalesTracker
         private void report_gil() 
         {
             Logger.Info("*~*~*~*~*~*~*~*~*~*~");
-            Logger.Info($"Items sold: {sale_count:n0}");
-            Logger.Info($"Gil obtained: {gil:n0}");
+            Logger.Info($"Items sold: {_saleCount:n0}");
+            Logger.Info($"Gil obtained: {_gil:n0}");
             Logger.Info("*~*~*~*~*~*~*~*~*~*~");
         }
 
