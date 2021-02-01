@@ -3,11 +3,13 @@ using ff14bot.Enums;
 using ff14bot.Managers;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using Newtonsoft.Json;
 
 namespace SalesTracker
 {
@@ -15,24 +17,30 @@ namespace SalesTracker
     {
         public int SaleCount { get; set; }
         private readonly Regex _mbRegex = new Regex(@"The (\d*)(.*) you put up for sale in the (.*) markets .* sold for (.*) gil .*", RegexOptions.Compiled); 
-        private SettingsForm form = new SettingsForm();
+        private SettingsForm _form;
+        public static SalesDatabase Database = new SalesDatabase();
 
         public override string Author => "Sinbeard";
 
         public override string Name => "Market Board Sales Tracker";
 
-        public override Version Version => new Version(1, 2, 0);
+        public override Version Version => new Version(1, 6, 0);
         public override bool WantButton => true;
         public override string ButtonText => "Log Report";
 
         public override void OnButtonPress() 
         {
-            // output chat log with sales
-            report_gil();
-
+            if (_form == null)
+            {
+                _form = new SettingsForm
+                {
+                    Text = "RB Statistics v" + Version,
+                };
+                _form.Closed += (o, e) => { _form = null; };
+            }
             try
             {
-                form.Show();
+                _form.Show();
             }
             catch (Exception e)
             {
@@ -42,13 +50,14 @@ namespace SalesTracker
 
         public override void OnInitialize()
         {
-            
+            Database = JsonConvert.DeserializeObject<SalesDatabase>(File.ReadAllText(@"Plugins\SalesTracker\sales.json"));
         }
 
         public override void OnEnabled()
         {
             GamelogManager.MessageRecevied += GamelogManager_MessageRecevied;
-            // load settings? 
+            // load settings? json file... look in settings folder. 
+            // todo: don't forget to save...
         }
         public override void OnDisabled() 
         {
@@ -67,20 +76,22 @@ namespace SalesTracker
                     if (match.Success)
                     {
                         SaleCount++;
+                        Sale sale = new Sale();
                         var groups = match.Groups;
 
-                        var amount = groups[1].ToString() != "" ? int.Parse(groups[1].ToString()) : 1;
-                        var item = groups[2].ToString();
-                        var price = int.Parse(groups[4].ToString().Replace(",", ""));
-                        form.Gil += price;
-                        form.Sales++;
-                        var market = groups[3].ToString();
+                        sale.SalesDateTime = DateTime.Now;
+                        sale.AmountSold = groups[1].ToString() != "" ? int.Parse(groups[1].ToString()) : 1;
+                        sale.ItemSold = groups[2].ToString();
+                        sale.SoldPrice = int.Parse(groups[4].ToString().Replace(",", ""));
+                        sale.MarketSold = groups[3].ToString();
 
-                        Logger.Info($"{amount} x {item} sold for {price:n0} on {market}\n");
-                        Logger.Info($"You have made {SaleCount} sales, and {form.Gil:n0} since starting the bot.");
+                        Database.Sales.Add(sale);
 
-                        report_gil();
+                        _form.Gil += sale.SoldPrice;
+                        _form.Sales++;
                         
+                        Logger.Info($"{sale.AmountSold} x {sale.ItemSold} sold for {sale.SoldPrice:n0} on {sale.MarketSold} market\n");
+                        Logger.Info($"You have made {SaleCount} sales, and {_form.Gil:n0} since starting the bot.");
                     }
                     break;
                 case MessageType.Tell_Receive:
@@ -90,14 +101,5 @@ namespace SalesTracker
                     break;
             }      
         }
-
-        private void report_gil() 
-        {
-            Logger.Info("*~*~*~*~*~*~*~*~*~*~");
-            Logger.Info($"Items sold: {SaleCount:n0}");
-            Logger.Info($"Gil obtained: {form.Gil:n0}");
-            Logger.Info("*~*~*~*~*~*~*~*~*~*~");
-        }
-
     }
 }

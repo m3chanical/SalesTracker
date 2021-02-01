@@ -12,6 +12,13 @@ namespace SalesTracker
 {
     public partial class SettingsForm : Form, INotifyPropertyChanged
     {
+        /*
+         * TODO:
+         *  average gil per sale
+         *  gil per hour
+         *  maybe track total gil delta
+         *  datagrid listing all sales and their data
+         */
         public event PropertyChangedEventHandler PropertyChanged;
         private int _gil;
         private int _sales;
@@ -40,12 +47,13 @@ namespace SalesTracker
             InitializeComponent();
             gilLabel.DataBindings.Add(new Binding("Text", this, "Gil", true, DataSourceUpdateMode.OnPropertyChanged, "", "n0"));
             salesLabel.DataBindings.Add(new Binding("Text", this, "Sales"));
+
+            if (SalesPlugin.Database != null) salesDataGrid.DataSource = SalesPlugin.Database.Sales;
         }
 
         protected virtual void OnPropertyChanged(string property)
         {
-            if(PropertyChanged != null)
-                PropertyChanged(this, new PropertyChangedEventArgs(property));
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(property));
         }
     }
 }
