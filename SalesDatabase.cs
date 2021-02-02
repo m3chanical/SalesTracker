@@ -15,6 +15,7 @@ namespace SalesTracker
         public DateTime SalesDateTime { get; set; }
         public int AmountSold { get; set; }
         public string ItemSold { get; set; }
+        public uint ItemId { get; set; }
         public int SoldPrice { get; set; }
         public string MarketSold { get; set; }
     }

@@ -3,6 +3,7 @@ using ff14bot.Enums;
 using ff14bot.Managers;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -19,6 +20,7 @@ namespace SalesTracker
         private readonly Regex _mbRegex = new Regex(@"The (\d*)(.*) you put up for sale in the (.*) markets .* sold for (.*) gil .*", RegexOptions.Compiled); 
         private SettingsForm _form;
         public static SalesDatabase Database = new SalesDatabase();
+        public event EventHandler<EventArgs> SaleAdded;
 
         public override string Author => "Sinbeard";
 
@@ -32,7 +34,7 @@ namespace SalesTracker
         {
             if (_form == null)
             {
-                _form = new SettingsForm
+                _form = new SettingsForm(this)
                 {
                     Text = "RB Statistics v" + Version,
                 };
@@ -81,17 +83,22 @@ namespace SalesTracker
 
                         sale.SalesDateTime = DateTime.Now;
                         sale.AmountSold = groups[1].ToString() != "" ? int.Parse(groups[1].ToString()) : 1;
-                        sale.ItemSold = groups[2].ToString();
+                        var item = GetItemFromString(groups[2].ToString());
+                        sale.ItemSold = item.CurrentLocaleName;
+                        sale.ItemId = item.Id;
                         sale.SoldPrice = int.Parse(groups[4].ToString().Replace(",", ""));
                         sale.MarketSold = groups[3].ToString();
 
                         Database.Sales.Add(sale);
+                        var listener = SaleAdded;
+                        listener?.Invoke(this, EventArgs.Empty);
 
                         _form.Gil += sale.SoldPrice;
                         _form.Sales++;
-                        
-                        Logger.Info($"{sale.AmountSold} x {sale.ItemSold} sold for {sale.SoldPrice:n0} on {sale.MarketSold} market\n");
+
+                        Logger.Info($"{sale.AmountSold} x {sale.ItemSold}:{sale.ItemId} sold for {sale.SoldPrice:n0} on {sale.MarketSold} market\n");
                         Logger.Info($"You have made {SaleCount} sales, and {_form.Gil:n0} since starting the bot.");
+                        
                     }
                     break;
                 case MessageType.Tell_Receive:
@@ -100,6 +107,29 @@ namespace SalesTracker
                 default:
                     break;
             }      
+        }
+
+        private Item GetItemFromString(string itemStr)
+        {
+            Item item = null;
+
+            itemStr = Regex.Replace(itemStr, @"[^\u0000-\u007F]+", string.Empty).Trim();
+            TextInfo textInfo = new CultureInfo("en-US", false).TextInfo;
+            itemStr = textInfo.ToTitleCase(itemStr);
+
+            for (int i = 0; i < itemStr.Length; i++) 
+            {
+                var search = itemStr.Remove(0, i);
+                item = DataManager.GetItem(search);
+
+                if (item != null) 
+                {
+                    Logger.Info($"Found {item} in database from sales string.");
+                    break;
+                }
+            }
+
+            return item;
         }
     }
 }

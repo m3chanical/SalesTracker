@@ -42,18 +42,25 @@ namespace SalesTracker
             }
         }
 
-        public SettingsForm() 
+        public SettingsForm(SalesPlugin sp) 
         {
             InitializeComponent();
             gilLabel.DataBindings.Add(new Binding("Text", this, "Gil", true, DataSourceUpdateMode.OnPropertyChanged, "", "n0"));
             salesLabel.DataBindings.Add(new Binding("Text", this, "Sales"));
 
             if (SalesPlugin.Database != null) salesDataGrid.DataSource = SalesPlugin.Database.Sales;
+            sp.SaleAdded += SaleAdded;
+        }
+
+        void SaleAdded(object s, EventArgs e)
+        {
+            salesDataGrid.Update(); //maybe refresh?
         }
 
         protected virtual void OnPropertyChanged(string property)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(property));
+            salesDataGrid.Update();
         }
     }
 }
