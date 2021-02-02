@@ -49,8 +49,11 @@ namespace SalesTracker
             gilLabel.DataBindings.Add(new Binding("Text", this, "Gil", true, DataSourceUpdateMode.OnPropertyChanged, "", "n0"));
             salesLabel.DataBindings.Add(new Binding("Text", this, "Sales"));
 
-            if (SalesPlugin.Database != null) salesDataGrid.DataSource = SalesPlugin.Database.Sales;
+            if (SalesPlugin.Database != null) salesDataGrid.DataSource = SalesSettings.Instance.Sales;
             if(Logger.LogList != null) logListBox.DataSource = Logger.LogList;
+
+            salesDataGrid.RowsAdded += salesDataGrid_RowsAdded;
+            _ = CalculateStatistics();
         }
 
         public void SaleAdded()

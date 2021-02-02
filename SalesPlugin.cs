@@ -52,7 +52,7 @@ namespace SalesTracker
 
         public override void OnInitialize()
         {
-            Database = JsonConvert.DeserializeObject<SalesDatabase>(File.ReadAllText(@"Plugins\SalesTracker\sales.json"));
+            //Database = JsonConvert.DeserializeObject<SalesDatabase>(File.ReadAllText(@"Plugins\SalesTracker\sales.json"));
         }
 
         public override void OnEnabled()
@@ -78,7 +78,7 @@ namespace SalesTracker
                     if (match.Success)
                     {
                         SaleCount++;
-                        Sale sale = new Sale();
+                        SalesSettings.Sale sale = new SalesSettings.Sale();
                         var groups = match.Groups;
 
                         sale.SalesDateTime = DateTime.Now;
@@ -89,7 +89,7 @@ namespace SalesTracker
                         sale.SoldPrice = int.Parse(groups[4].ToString().Replace(",", ""));
                         sale.MarketSold = groups[3].ToString();
 
-                        Database.Sales.Add(sale);
+                        SalesSettings.Instance.Sales.Add(sale); // ???
 
                         if (_form != null)
                         {
