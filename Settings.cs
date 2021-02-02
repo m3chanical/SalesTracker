@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using ff14bot.Helpers;
+using Newtonsoft.Json;
 
 namespace SalesTracker
 {
@@ -31,6 +32,8 @@ namespace SalesTracker
         }
 
         [Setting]
+        [Description("List of recorded sales while plugin has run.")]
+        [JsonProperty("Sales")]
         public BindingList<Sale> Sales
         {
             get => _sales;

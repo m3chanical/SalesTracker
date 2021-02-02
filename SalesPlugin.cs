@@ -16,16 +16,16 @@ namespace SalesTracker
 {
     public class SalesPlugin : BotPlugin
     {
-        public int SaleCount { get; set; }
+        private int _saleCount;
+        private int _gil;
         private readonly Regex _mbRegex = new Regex(@"The (\d*)(.*) you put up for sale in the (.*) markets .* sold for (.*) gil .*", RegexOptions.Compiled); 
         private SettingsForm _form;
-        public static SalesDatabase Database = new SalesDatabase();
 
         public override string Author => "Sinbeard";
 
         public override string Name => "Market Board Sales Tracker";
 
-        public override Version Version => new Version(1, 6, 5);
+        public override Version Version => new Version(0, 7, 8);
         public override bool WantButton => true;
         public override string ButtonText => "Log Report";
 
@@ -52,14 +52,11 @@ namespace SalesTracker
 
         public override void OnInitialize()
         {
-            //Database = JsonConvert.DeserializeObject<SalesDatabase>(File.ReadAllText(@"Plugins\SalesTracker\sales.json"));
         }
 
         public override void OnEnabled()
         {
             GamelogManager.MessageRecevied += GamelogManager_MessageRecevied;
-            // load settings? json file... look in settings folder. 
-            // todo: don't forget to save...
         }
         public override void OnDisabled() 
         {
@@ -72,12 +69,11 @@ namespace SalesTracker
             {
                 case MessageType.RetainerSaleReports:
                     Logger.Info("Market Board sale made.");
-                    Logger.Verbose($"Cool Sales Message: " + e.ChatLogEntry.Contents);
 
                     var match = _mbRegex.Match(e.ChatLogEntry.Contents);
                     if (match.Success)
                     {
-                        SaleCount++;
+                        _saleCount++;
                         SalesSettings.Sale sale = new SalesSettings.Sale();
                         var groups = match.Groups;
 
@@ -87,23 +83,18 @@ namespace SalesTracker
                         sale.ItemSold = item == null ? groups[2].ToString() : item.CurrentLocaleName;
                         sale.ItemId = item?.Id ?? 0;
                         sale.SoldPrice = int.Parse(groups[4].ToString().Replace(",", ""));
+                        _gil += sale.SoldPrice;
                         sale.MarketSold = groups[3].ToString();
 
+                        Logger.Info($"{sale.AmountSold} x {sale.ItemSold} (Item ID: {sale.ItemId}) sold for {sale.SoldPrice:n0} on {sale.MarketSold} market\n");
+                        Logger.Info($"You have made {_saleCount} sales, and {_gil:n0} since starting the bot.");
+
                         SalesSettings.Instance.Sales.Add(sale); // ???
-
-                        if (_form != null)
-                        {
-                            _form.Gil += sale.SoldPrice;
-                            _form.Sales++;
-
-                            Logger.Info(
-                                $"{sale.AmountSold} x {sale.ItemSold}:{sale.ItemId} sold for {sale.SoldPrice:n0} on {sale.MarketSold} market\n");
-                            Logger.Info($"You have made {SaleCount} sales, and {_form.Gil:n0} since starting the bot.");
-                        }
                     }
                     break;
                 case MessageType.Tell_Receive:
-                    Logger.Info("Tell received.");
+                    Logger.Info($"Tell received from {e.ChatLogEntry.SenderDisplayName}.");
+                    Logger.Info($"Tell text: {e.ChatLogEntry.Contents}");
                     break;
             }      
         }

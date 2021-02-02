@@ -49,7 +49,7 @@ namespace SalesTracker
             gilLabel.DataBindings.Add(new Binding("Text", this, "Gil", true, DataSourceUpdateMode.OnPropertyChanged, "", "n0"));
             salesLabel.DataBindings.Add(new Binding("Text", this, "Sales"));
 
-            if (SalesPlugin.Database != null) salesDataGrid.DataSource = SalesSettings.Instance.Sales;
+            salesDataGrid.DataSource = SalesSettings.Instance.Sales;
             if(Logger.LogList != null) logListBox.DataSource = Logger.LogList;
 
             salesDataGrid.RowsAdded += salesDataGrid_RowsAdded;
@@ -85,10 +85,10 @@ namespace SalesTracker
             //TODO
         }
 
-        private async void salesDataGrid_RowsAdded(object sender, DataGridViewRowsAddedEventArgs e) 
+        private async void salesDataGrid_RowsAdded(object sender, DataGridViewRowsAddedEventArgs e)
         {
-            Logger.Info("Row added to Database.");
-            await CalculateStatistics();
+            lastSaleLabel.Text = salesDataGrid.Rows[salesDataGrid.RowCount - 1].Cells[0].Value.ToString(); ;
+                await CalculateStatistics();
         }
 
         private async Task<bool> CalculateStatistics()
@@ -96,6 +96,17 @@ namespace SalesTracker
             //TODO
             return await Task.Run<bool>(() =>
             {
+                salesLabel.Text = salesDataGrid.RowCount.ToString();
+                int gilsum = 0, itemsum = 0;
+                foreach (SalesSettings.Sale sale in SalesSettings.Instance.Sales)
+                {
+                    gilsum += sale.SoldPrice;
+                    itemsum += sale.AmountSold;
+                }
+
+                totalSoldLabel.Text = itemsum.ToString();
+                gilLabel.Text = gilsum.ToString();
+                gilPerDayLabel.Text = SalesSettings.Instance.Sales.Where(r => r.SalesDateTime.Date == DateTime.Today.Date).Sum(r => r.SoldPrice).ToString(); // meow?
                 return true; 
             });
         }
