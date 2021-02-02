@@ -20,6 +20,7 @@ namespace SalesTracker
          *  datagrid listing all sales and their data
          */
         public event PropertyChangedEventHandler PropertyChanged;
+         
         private int _gil;
         private int _sales;
         public int Gil
@@ -42,25 +43,72 @@ namespace SalesTracker
             }
         }
 
-        public SettingsForm(SalesPlugin sp) 
+        public SettingsForm() 
         {
             InitializeComponent();
             gilLabel.DataBindings.Add(new Binding("Text", this, "Gil", true, DataSourceUpdateMode.OnPropertyChanged, "", "n0"));
             salesLabel.DataBindings.Add(new Binding("Text", this, "Sales"));
 
             if (SalesPlugin.Database != null) salesDataGrid.DataSource = SalesPlugin.Database.Sales;
-            sp.SaleAdded += SaleAdded;
+            if(Logger.LogList != null) logListBox.DataSource = Logger.LogList;
         }
 
-        void SaleAdded(object s, EventArgs e)
+        public void SaleAdded()
         {
-            salesDataGrid.Update(); //maybe refresh?
+            Logger.Info("Update DataGrid");
+            salesDataGrid.Refresh(); //maybe refresh?
         }
 
         protected virtual void OnPropertyChanged(string property)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(property));
-            salesDataGrid.Update();
+            salesDataGrid.Refresh();
+        }
+
+        private void tabControl1_SelectedIndexChanged(object sender, EventArgs e) 
+        {
+            switch (tabControl1.SelectedIndex) {
+                case 0: // Statistics page
+                    break;
+                case 1: // Sales List page
+                    break;
+                case 2: // log page
+                    break;
+            }
+        }
+
+        private void deleteButton_Click(object sender, EventArgs e)
+        {
+            Sale sale = new Sale
+            {
+                AmountSold = 123,
+                ItemId = 123,
+                ItemSold = "asdf",
+                MarketSold = "fdsa",
+                SalesDateTime = DateTime.Now,
+                SoldPrice = 123456,
+            };
+            
+            SalesPlugin.Database.Sales.Add(sale);
+        }
+
+        private async void salesDataGrid_RowsAdded(object sender, DataGridViewRowsAddedEventArgs e) 
+        {
+            Logger.Info("Row added to Database.");
+            await CalculateStatistics();
+        }
+
+        private async Task<bool> CalculateStatistics()
+        {
+            return await Task.Run<bool>(() =>
+            {
+                return true; 
+            });
+        }
+
+        private void SettingsForm_Load(object sender, EventArgs e) 
+        {
+
         }
     }
 }

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Windows.Media;
 using Clio.Utilities;
 
@@ -18,7 +19,7 @@ namespace SalesTracker
     }
     public class Logger
     {
-        public static List<string> LogList = new List<string>();
+        public static BindingList<string> LogList = new BindingList<string>();
         internal static bool log_verbose = true;
         internal static string Name => "Sales Report";
         internal static string Prefix => $"[{Name}] ";
@@ -26,7 +27,7 @@ namespace SalesTracker
             rlogging.Write(c, Prefix + string.Format(message, args));
 
             var logStr = "[" + DateTime.Now + "]" + " " + Prefix + string.Format(message, args);
-            if (LogList.Count >= 50)
+            if (LogList.Count >= 100)
                 LogList.RemoveAt(0);
             if (!LogList.Contains(logStr))
                 LogList.Add(logStr);

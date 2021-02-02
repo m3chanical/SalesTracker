@@ -29,7 +29,6 @@ namespace SalesTracker
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(SettingsForm));
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.statsTab = new System.Windows.Forms.TabPage();
-            this.salesTab = new System.Windows.Forms.TabPage();
             this.flowLayoutPanel1 = new System.Windows.Forms.FlowLayoutPanel();
             this.statsGroupBox = new System.Windows.Forms.GroupBox();
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
@@ -37,34 +36,41 @@ namespace SalesTracker
             this.label3 = new System.Windows.Forms.Label();
             this.salesLabel = new System.Windows.Forms.Label();
             this.label1 = new System.Windows.Forms.Label();
-            this.totalSoldLabel = new System.Windows.Forms.Label();
-            this.label2 = new System.Windows.Forms.Label();
-            this.salesDataGrid = new System.Windows.Forms.DataGridView();
             this.label5 = new System.Windows.Forms.Label();
+            this.totalSoldLabel = new System.Windows.Forms.Label();
             this.gilPerHourLabel = new System.Windows.Forms.Label();
             this.gilPerDayLabel = new System.Windows.Forms.Label();
-            this.label8 = new System.Windows.Forms.Label();
             this.label9 = new System.Windows.Forms.Label();
+            this.label8 = new System.Windows.Forms.Label();
+            this.label2 = new System.Windows.Forms.Label();
             this.label10 = new System.Windows.Forms.Label();
+            this.salesTab = new System.Windows.Forms.TabPage();
+            this.salesDataGrid = new System.Windows.Forms.DataGridView();
+            this.deleteButton = new System.Windows.Forms.Button();
+            this.logTabPage = new System.Windows.Forms.TabPage();
+            this.logListBox = new System.Windows.Forms.ListBox();
             this.tabControl1.SuspendLayout();
             this.statsTab.SuspendLayout();
-            this.salesTab.SuspendLayout();
             this.flowLayoutPanel1.SuspendLayout();
             this.statsGroupBox.SuspendLayout();
             this.tableLayoutPanel1.SuspendLayout();
+            this.salesTab.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.salesDataGrid)).BeginInit();
+            this.logTabPage.SuspendLayout();
             this.SuspendLayout();
             // 
             // tabControl1
             // 
             this.tabControl1.Controls.Add(this.statsTab);
             this.tabControl1.Controls.Add(this.salesTab);
+            this.tabControl1.Controls.Add(this.logTabPage);
             this.tabControl1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tabControl1.Location = new System.Drawing.Point(0, 0);
             this.tabControl1.Name = "tabControl1";
             this.tabControl1.SelectedIndex = 0;
-            this.tabControl1.Size = new System.Drawing.Size(505, 610);
+            this.tabControl1.Size = new System.Drawing.Size(584, 561);
             this.tabControl1.TabIndex = 0;
+            this.tabControl1.SelectedIndexChanged += new System.EventHandler(this.tabControl1_SelectedIndexChanged);
             // 
             // statsTab
             // 
@@ -72,21 +78,10 @@ namespace SalesTracker
             this.statsTab.Location = new System.Drawing.Point(4, 22);
             this.statsTab.Name = "statsTab";
             this.statsTab.Padding = new System.Windows.Forms.Padding(3);
-            this.statsTab.Size = new System.Drawing.Size(497, 584);
+            this.statsTab.Size = new System.Drawing.Size(576, 535);
             this.statsTab.TabIndex = 0;
             this.statsTab.Text = "Statistics";
             this.statsTab.UseVisualStyleBackColor = true;
-            // 
-            // salesTab
-            // 
-            this.salesTab.Controls.Add(this.salesDataGrid);
-            this.salesTab.Location = new System.Drawing.Point(4, 22);
-            this.salesTab.Name = "salesTab";
-            this.salesTab.Padding = new System.Windows.Forms.Padding(3);
-            this.salesTab.Size = new System.Drawing.Size(497, 584);
-            this.salesTab.TabIndex = 1;
-            this.salesTab.Text = "Sales List";
-            this.salesTab.UseVisualStyleBackColor = true;
             // 
             // flowLayoutPanel1
             // 
@@ -94,7 +89,7 @@ namespace SalesTracker
             this.flowLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.flowLayoutPanel1.Location = new System.Drawing.Point(3, 3);
             this.flowLayoutPanel1.Name = "flowLayoutPanel1";
-            this.flowLayoutPanel1.Size = new System.Drawing.Size(491, 578);
+            this.flowLayoutPanel1.Size = new System.Drawing.Size(570, 529);
             this.flowLayoutPanel1.TabIndex = 0;
             // 
             // statsGroupBox
@@ -114,7 +109,7 @@ namespace SalesTracker
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 92F));
-            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 52F));
+            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 53F));
             this.tableLayoutPanel1.Controls.Add(this.gilLabel, 1, 1);
             this.tableLayoutPanel1.Controls.Add(this.label3, 0, 1);
             this.tableLayoutPanel1.Controls.Add(this.salesLabel, 1, 0);
@@ -174,34 +169,6 @@ namespace SalesTracker
             this.label1.TabIndex = 0;
             this.label1.Text = "Sales Made:";
             // 
-            // totalSoldLabel
-            // 
-            this.totalSoldLabel.AutoSize = true;
-            this.totalSoldLabel.Location = new System.Drawing.Point(267, 0);
-            this.totalSoldLabel.Name = "totalSoldLabel";
-            this.totalSoldLabel.Size = new System.Drawing.Size(13, 13);
-            this.totalSoldLabel.TabIndex = 5;
-            this.totalSoldLabel.Text = "0";
-            // 
-            // label2
-            // 
-            this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(3, 172);
-            this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(54, 13);
-            this.label2.TabIndex = 4;
-            this.label2.Text = "Last Sale:";
-            // 
-            // salesDataGrid
-            // 
-            this.salesDataGrid.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
-            this.salesDataGrid.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.salesDataGrid.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.salesDataGrid.Location = new System.Drawing.Point(3, 3);
-            this.salesDataGrid.Name = "salesDataGrid";
-            this.salesDataGrid.Size = new System.Drawing.Size(491, 578);
-            this.salesDataGrid.TabIndex = 0;
-            // 
             // label5
             // 
             this.label5.AutoSize = true;
@@ -210,6 +177,15 @@ namespace SalesTracker
             this.label5.Size = new System.Drawing.Size(86, 13);
             this.label5.TabIndex = 6;
             this.label5.Text = "Total Items Sold:";
+            // 
+            // totalSoldLabel
+            // 
+            this.totalSoldLabel.AutoSize = true;
+            this.totalSoldLabel.Location = new System.Drawing.Point(267, 0);
+            this.totalSoldLabel.Name = "totalSoldLabel";
+            this.totalSoldLabel.Size = new System.Drawing.Size(13, 13);
+            this.totalSoldLabel.TabIndex = 5;
+            this.totalSoldLabel.Text = "0";
             // 
             // gilPerHourLabel
             // 
@@ -229,6 +205,15 @@ namespace SalesTracker
             this.gilPerDayLabel.TabIndex = 8;
             this.gilPerDayLabel.Text = "0";
             // 
+            // label9
+            // 
+            this.label9.AutoSize = true;
+            this.label9.Location = new System.Drawing.Point(175, 86);
+            this.label9.Name = "label9";
+            this.label9.Size = new System.Drawing.Size(66, 13);
+            this.label9.TabIndex = 10;
+            this.label9.Text = "Gil per Hour:";
+            // 
             // label8
             // 
             this.label8.AutoSize = true;
@@ -238,14 +223,14 @@ namespace SalesTracker
             this.label8.TabIndex = 9;
             this.label8.Text = "0";
             // 
-            // label9
+            // label2
             // 
-            this.label9.AutoSize = true;
-            this.label9.Location = new System.Drawing.Point(175, 86);
-            this.label9.Name = "label9";
-            this.label9.Size = new System.Drawing.Size(66, 13);
-            this.label9.TabIndex = 10;
-            this.label9.Text = "Gil per Hour:";
+            this.label2.AutoSize = true;
+            this.label2.Location = new System.Drawing.Point(3, 172);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(54, 13);
+            this.label2.TabIndex = 4;
+            this.label2.Text = "Last Sale:";
             // 
             // label10
             // 
@@ -256,25 +241,83 @@ namespace SalesTracker
             this.label10.TabIndex = 11;
             this.label10.Text = "Gil per Day:";
             // 
+            // salesTab
+            // 
+            this.salesTab.Controls.Add(this.deleteButton);
+            this.salesTab.Controls.Add(this.salesDataGrid);
+            this.salesTab.Location = new System.Drawing.Point(4, 22);
+            this.salesTab.Name = "salesTab";
+            this.salesTab.Padding = new System.Windows.Forms.Padding(3);
+            this.salesTab.Size = new System.Drawing.Size(576, 535);
+            this.salesTab.TabIndex = 1;
+            this.salesTab.Text = "Sales List";
+            this.salesTab.UseVisualStyleBackColor = true;
+            // 
+            // salesDataGrid
+            // 
+            this.salesDataGrid.AllowUserToAddRows = false;
+            this.salesDataGrid.AllowUserToDeleteRows = false;
+            this.salesDataGrid.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
+            this.salesDataGrid.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.salesDataGrid.Dock = System.Windows.Forms.DockStyle.Top;
+            this.salesDataGrid.Location = new System.Drawing.Point(3, 3);
+            this.salesDataGrid.Name = "salesDataGrid";
+            this.salesDataGrid.ReadOnly = true;
+            this.salesDataGrid.Size = new System.Drawing.Size(570, 500);
+            this.salesDataGrid.TabIndex = 0;
+            this.salesDataGrid.RowsAdded += new System.Windows.Forms.DataGridViewRowsAddedEventHandler(this.salesDataGrid_RowsAdded);
+            // 
+            // deleteButton
+            // 
+            this.deleteButton.Dock = System.Windows.Forms.DockStyle.Bottom;
+            this.deleteButton.Location = new System.Drawing.Point(3, 509);
+            this.deleteButton.Name = "deleteButton";
+            this.deleteButton.Size = new System.Drawing.Size(570, 23);
+            this.deleteButton.TabIndex = 1;
+            this.deleteButton.Text = "Delete Row";
+            this.deleteButton.UseVisualStyleBackColor = true;
+            this.deleteButton.Click += new System.EventHandler(this.deleteButton_Click);
+            // 
+            // logTabPage
+            // 
+            this.logTabPage.Controls.Add(this.logListBox);
+            this.logTabPage.Location = new System.Drawing.Point(4, 22);
+            this.logTabPage.Name = "logTabPage";
+            this.logTabPage.Size = new System.Drawing.Size(576, 535);
+            this.logTabPage.TabIndex = 2;
+            this.logTabPage.Text = "Sales Logs";
+            this.logTabPage.UseVisualStyleBackColor = true;
+            // 
+            // logListBox
+            // 
+            this.logListBox.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.logListBox.FormattingEnabled = true;
+            this.logListBox.Location = new System.Drawing.Point(0, 0);
+            this.logListBox.Name = "logListBox";
+            this.logListBox.Size = new System.Drawing.Size(576, 535);
+            this.logListBox.TabIndex = 0;
+            // 
             // SettingsForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(505, 610);
+            this.ClientSize = new System.Drawing.Size(584, 561);
             this.Controls.Add(this.tabControl1);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "SettingsForm";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
             this.Text = "RB Statistics";
+            this.Load += new System.EventHandler(this.SettingsForm_Load);
             this.tabControl1.ResumeLayout(false);
             this.statsTab.ResumeLayout(false);
-            this.salesTab.ResumeLayout(false);
             this.flowLayoutPanel1.ResumeLayout(false);
             this.statsGroupBox.ResumeLayout(false);
             this.tableLayoutPanel1.ResumeLayout(false);
             this.tableLayoutPanel1.PerformLayout();
+            this.salesTab.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.salesDataGrid)).EndInit();
+            this.logTabPage.ResumeLayout(false);
             this.ResumeLayout(false);
 
         }
@@ -300,5 +343,8 @@ namespace SalesTracker
         private System.Windows.Forms.Label label9;
         private System.Windows.Forms.Label label8;
         private System.Windows.Forms.Label label10;
+        private System.Windows.Forms.Button deleteButton;
+        private System.Windows.Forms.TabPage logTabPage;
+        private System.Windows.Forms.ListBox logListBox;
     }
 }

@@ -20,7 +20,6 @@ namespace SalesTracker
         private readonly Regex _mbRegex = new Regex(@"The (\d*)(.*) you put up for sale in the (.*) markets .* sold for (.*) gil .*", RegexOptions.Compiled); 
         private SettingsForm _form;
         public static SalesDatabase Database = new SalesDatabase();
-        public event EventHandler<EventArgs> SaleAdded;
 
         public override string Author => "Sinbeard";
 
@@ -34,9 +33,10 @@ namespace SalesTracker
         {
             if (_form == null)
             {
-                _form = new SettingsForm(this)
+                _form = new SettingsForm()
                 {
                     Text = "RB Statistics v" + Version,
+                    
                 };
                 _form.Closed += (o, e) => { _form = null; };
             }
@@ -84,27 +84,26 @@ namespace SalesTracker
                         sale.SalesDateTime = DateTime.Now;
                         sale.AmountSold = groups[1].ToString() != "" ? int.Parse(groups[1].ToString()) : 1;
                         var item = GetItemFromString(groups[2].ToString());
-                        sale.ItemSold = item.CurrentLocaleName;
-                        sale.ItemId = item.Id;
+                        sale.ItemSold = item == null ? groups[2].ToString() : item.CurrentLocaleName;
+                        sale.ItemId = item?.Id ?? 0;
                         sale.SoldPrice = int.Parse(groups[4].ToString().Replace(",", ""));
                         sale.MarketSold = groups[3].ToString();
 
                         Database.Sales.Add(sale);
-                        var listener = SaleAdded;
-                        listener?.Invoke(this, EventArgs.Empty);
 
-                        _form.Gil += sale.SoldPrice;
-                        _form.Sales++;
+                        if (_form != null)
+                        {
+                            _form.Gil += sale.SoldPrice;
+                            _form.Sales++;
 
-                        Logger.Info($"{sale.AmountSold} x {sale.ItemSold}:{sale.ItemId} sold for {sale.SoldPrice:n0} on {sale.MarketSold} market\n");
-                        Logger.Info($"You have made {SaleCount} sales, and {_form.Gil:n0} since starting the bot.");
-                        
+                            Logger.Info(
+                                $"{sale.AmountSold} x {sale.ItemSold}:{sale.ItemId} sold for {sale.SoldPrice:n0} on {sale.MarketSold} market\n");
+                            Logger.Info($"You have made {SaleCount} sales, and {_form.Gil:n0} since starting the bot.");
+                        }
                     }
                     break;
                 case MessageType.Tell_Receive:
-                    Logger.Info("HOLY SHIT YOU RECEIVED A TELL.");
-                    break;
-                default:
+                    Logger.Info("Tell received.");
                     break;
             }      
         }

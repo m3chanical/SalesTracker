@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -8,7 +9,7 @@ namespace SalesTracker
 {
     public class SalesDatabase
     {
-        public List<Sale> Sales { get; set; }
+        public BindingList<Sale> Sales { get; set; }
     }
     public class Sale
     {
