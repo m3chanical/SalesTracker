@@ -105,6 +105,7 @@ namespace SalesTracker
             // 
             // tableLayoutPanel1
             // 
+            this.tableLayoutPanel1.AutoSize = true;
             this.tableLayoutPanel1.ColumnCount = 4;
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
@@ -313,6 +314,7 @@ namespace SalesTracker
             this.statsTab.ResumeLayout(false);
             this.flowLayoutPanel1.ResumeLayout(false);
             this.statsGroupBox.ResumeLayout(false);
+            this.statsGroupBox.PerformLayout();
             this.tableLayoutPanel1.ResumeLayout(false);
             this.tableLayoutPanel1.PerformLayout();
             this.salesTab.ResumeLayout(false);

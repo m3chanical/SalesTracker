@@ -79,17 +79,7 @@ namespace SalesTracker
 
         private void deleteButton_Click(object sender, EventArgs e)
         {
-            Sale sale = new Sale
-            {
-                AmountSold = 123,
-                ItemId = 123,
-                ItemSold = "asdf",
-                MarketSold = "fdsa",
-                SalesDateTime = DateTime.Now,
-                SoldPrice = 123456,
-            };
-            
-            SalesPlugin.Database.Sales.Add(sale);
+            //TODO
         }
 
         private async void salesDataGrid_RowsAdded(object sender, DataGridViewRowsAddedEventArgs e) 
@@ -100,6 +90,7 @@ namespace SalesTracker
 
         private async Task<bool> CalculateStatistics()
         {
+            //TODO
             return await Task.Run<bool>(() =>
             {
                 return true; 
