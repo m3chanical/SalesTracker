@@ -83,7 +83,7 @@ namespace SalesTracker
 
                         sale.SalesDateTime = DateTime.Now;
                         sale.AmountSold = groups[1].ToString() != "" ? int.Parse(groups[1].ToString()) : 1;
-                        var item = GetItemFromBytes(e.ChatLogEntry.Bytes);
+                        Item item = GetItemFromBytes(e.ChatLogEntry.Bytes);
                         sale.ItemSold = item == null ? groups[2].ToString() : item.CurrentLocaleName;
                         sale.ItemId = item?.Id ?? 0;
                         sale.SoldPrice = int.Parse(groups[4].ToString().Replace(",", ""));
@@ -110,25 +110,8 @@ namespace SalesTracker
 
         private Item GetItemFromBytes(IReadOnlyList<byte> itemBytes)
         {
-
-            /*
-            itemStr = Regex.Replace(itemStr, @"[^\u0000-\u007F]+", string.Empty).Trim();
-            TextInfo textInfo = new CultureInfo("en-US", false).TextInfo;
-            itemStr = textInfo.ToTitleCase(itemStr);
-
-            for (int i = 0; i < itemStr.Length; i++) 
-            {
-                var search = itemStr.Remove(0, i);
-                item = DataManager.GetItem(search);
-
-                if (item != null) 
-                {
-                    Logger.Info($"Found {item} in database from sales string.");
-                    break;
-                }
-            }
-            */
             List<byte> newBytes = new List<byte>();
+            bool HQ = false;
             for (var x = 0; x < itemBytes.Count(); x++) {
                 switch (itemBytes[x]) {
                     case 2:
@@ -147,7 +130,15 @@ namespace SalesTracker
             foreach (var b in newBytes) {
                 result += $"{b:X}";
             }
-            Item item = DataManager.GetItem((uint)int.Parse(result, NumberStyles.HexNumber));
+
+            uint itemId = (uint) int.Parse(result, NumberStyles.HexNumber);
+            if (itemId > 1000000)
+            {
+                itemId -= 1000000;
+                HQ = true;
+            }
+
+            Item item = DataManager.GetItem(itemId, HQ);
             return item;
         }
     }
