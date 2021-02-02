@@ -1,32 +1,4 @@
 {
     "Sales" : [
-        {
-            "SalesDateTiem" : "",
-            "AmountSold" : 20,
-            "ItemSold" : "Pizza",
-            "SoldPrice" : 20000,
-            "MarketSold" : "Limsa"
-        },
-        {
-            "SalesDateTiem" : "",
-            "AmountSold" : 20,
-            "ItemSold" : "Pizza",
-            "SoldPrice" : 20000,
-            "MarketSold" : "Limsa"
-        },
-        {
-            "SalesDateTiem" : "",
-            "AmountSold" : 20,
-            "ItemSold" : "Pizza",
-            "SoldPrice" : 20000,
-            "MarketSold" : "Limsa"
-        },
-        {
-            "SalesDateTiem" : "",
-            "AmountSold" : 20,
-            "ItemSold" : "Pizza",
-            "SoldPrice" : 20000,
-            "MarketSold" : "Limsa"
-        }
     ]
 }

@@ -25,7 +25,7 @@ namespace SalesTracker
 
         public override string Name => "Market Board Sales Tracker";
 
-        public override Version Version => new Version(1, 6, 0);
+        public override Version Version => new Version(1, 6, 5);
         public override bool WantButton => true;
         public override string ButtonText => "Log Report";
 
@@ -83,7 +83,7 @@ namespace SalesTracker
 
                         sale.SalesDateTime = DateTime.Now;
                         sale.AmountSold = groups[1].ToString() != "" ? int.Parse(groups[1].ToString()) : 1;
-                        var item = GetItemFromString(groups[2].ToString());
+                        var item = GetItemFromBytes(e.ChatLogEntry.Bytes);
                         sale.ItemSold = item == null ? groups[2].ToString() : item.CurrentLocaleName;
                         sale.ItemId = item?.Id ?? 0;
                         sale.SoldPrice = int.Parse(groups[4].ToString().Replace(",", ""));
@@ -108,10 +108,10 @@ namespace SalesTracker
             }      
         }
 
-        private Item GetItemFromString(string itemStr)
+        private Item GetItemFromBytes(IReadOnlyList<byte> itemBytes)
         {
-            Item item = null;
 
+            /*
             itemStr = Regex.Replace(itemStr, @"[^\u0000-\u007F]+", string.Empty).Trim();
             TextInfo textInfo = new CultureInfo("en-US", false).TextInfo;
             itemStr = textInfo.ToTitleCase(itemStr);
@@ -127,7 +127,27 @@ namespace SalesTracker
                     break;
                 }
             }
-
+            */
+            List<byte> newBytes = new List<byte>();
+            for (var x = 0; x < itemBytes.Count(); x++) {
+                switch (itemBytes[x]) {
+                    case 2:
+                        // special in-game replacements/wrappers
+                        // 2 46 5 7 242 2 210 3
+                        // 2 29 1 3
+                        // remove them
+                        if (itemBytes[x + 1] == 0x27 && itemBytes[x + 3] == 0x03) {
+                            var length = itemBytes[x + 2];
+                            newBytes.AddRange(itemBytes.Skip(x + 5).Take(length - 5));
+                        }
+                        break;
+                }
+            }
+            var result = "";
+            foreach (var b in newBytes) {
+                result += $"{b:X}";
+            }
+            Item item = DataManager.GetItem((uint)int.Parse(result, NumberStyles.HexNumber));
             return item;
         }
     }
