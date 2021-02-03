@@ -52,6 +52,7 @@ namespace SalesTracker
 
         public override void OnInitialize()
         {
+            Logger.Info("Initializing Sales Tracker Plugin");
         }
 
         public override void OnEnabled()

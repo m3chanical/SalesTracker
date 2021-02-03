@@ -2,8 +2,10 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
+using System.Diagnostics;
 using System.Drawing;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -46,14 +48,15 @@ namespace SalesTracker
         public SettingsForm() 
         {
             InitializeComponent();
-            gilLabel.DataBindings.Add(new Binding("Text", this, "Gil", true, DataSourceUpdateMode.OnPropertyChanged, "", "n0"));
-            salesLabel.DataBindings.Add(new Binding("Text", this, "Sales"));
-
-            salesDataGrid.DataSource = SalesSettings.Instance.Sales;
-            if(Logger.LogList != null) logListBox.DataSource = Logger.LogList;
-
+            SetDoubleBuffer(salesDataGrid, true);
             salesDataGrid.RowsAdded += salesDataGrid_RowsAdded;
-            _ = CalculateStatistics();
+        }
+
+        private void SetDoubleBuffer(Control dataGridView, bool doublebuffered)
+        {
+            typeof(Control).InvokeMember("DoubleBuffered",
+                BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.SetProperty,
+                null, dataGridView, new object[] {DoubleBuffered});
         }
 
         public void SaleAdded()
@@ -111,9 +114,12 @@ namespace SalesTracker
             });
         }
 
-        private void SettingsForm_Load(object sender, EventArgs e) 
+        private async void SettingsForm_Load(object sender, EventArgs e) 
         {
-
+            
+            if (Logger.LogList != null) logListBox.DataSource = Logger.LogList;
+            await Task.Run(() => salesDataGrid.DataSource = SalesSettings.Instance.Sales);
+            await Task.Run(CalculateStatistics);
         }
     }
 }

@@ -25,6 +25,11 @@ namespace SalesTracker
             public uint ItemId { get; set; }
             public int SoldPrice { get; set; }
             public string MarketSold { get; set; }
+            public override string ToString()
+            {
+                return
+                    $"[{SalesDateTime}]\t{ItemSold} (Id: {ItemId}) Amount: {AmountSold} Gil: {SoldPrice:n0} Market: {MarketSold}";
+            }
         }
 
         public SalesSettings() : base(Path.Combine(CharacterSettingsDirectory, "MarketBoardSales.json"))
