@@ -29,7 +29,6 @@ namespace SalesTracker
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(SettingsForm));
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.statsTab = new System.Windows.Forms.TabPage();
-            this.flowLayoutPanel1 = new System.Windows.Forms.FlowLayoutPanel();
             this.statsGroupBox = new System.Windows.Forms.GroupBox();
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
             this.gilLabel = new System.Windows.Forms.Label();
@@ -44,14 +43,17 @@ namespace SalesTracker
             this.lastSaleLabel = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
             this.label10 = new System.Windows.Forms.Label();
+            this.label4 = new System.Windows.Forms.Label();
+            this.gilPerSaleLabel = new System.Windows.Forms.Label();
             this.salesTab = new System.Windows.Forms.TabPage();
             this.deleteButton = new System.Windows.Forms.Button();
             this.salesDataGrid = new System.Windows.Forms.DataGridView();
             this.logTabPage = new System.Windows.Forms.TabPage();
             this.logListBox = new System.Windows.Forms.ListBox();
+            this.label7 = new System.Windows.Forms.Label();
+            this.gilPerItemLabel = new System.Windows.Forms.Label();
             this.tabControl1.SuspendLayout();
             this.statsTab.SuspendLayout();
-            this.flowLayoutPanel1.SuspendLayout();
             this.statsGroupBox.SuspendLayout();
             this.tableLayoutPanel1.SuspendLayout();
             this.salesTab.SuspendLayout();
@@ -74,7 +76,7 @@ namespace SalesTracker
             // 
             // statsTab
             // 
-            this.statsTab.Controls.Add(this.flowLayoutPanel1);
+            this.statsTab.Controls.Add(this.statsGroupBox);
             this.statsTab.Location = new System.Drawing.Point(4, 22);
             this.statsTab.Name = "statsTab";
             this.statsTab.Padding = new System.Windows.Forms.Padding(3);
@@ -83,34 +85,27 @@ namespace SalesTracker
             this.statsTab.Text = "Statistics";
             this.statsTab.UseVisualStyleBackColor = true;
             // 
-            // flowLayoutPanel1
-            // 
-            this.flowLayoutPanel1.Controls.Add(this.statsGroupBox);
-            this.flowLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.flowLayoutPanel1.Location = new System.Drawing.Point(3, 3);
-            this.flowLayoutPanel1.Name = "flowLayoutPanel1";
-            this.flowLayoutPanel1.Size = new System.Drawing.Size(570, 529);
-            this.flowLayoutPanel1.TabIndex = 0;
-            // 
             // statsGroupBox
             // 
             this.statsGroupBox.Controls.Add(this.tableLayoutPanel1);
             this.statsGroupBox.Dock = System.Windows.Forms.DockStyle.Top;
             this.statsGroupBox.Location = new System.Drawing.Point(3, 3);
             this.statsGroupBox.Name = "statsGroupBox";
-            this.statsGroupBox.Size = new System.Drawing.Size(323, 146);
-            this.statsGroupBox.TabIndex = 2;
+            this.statsGroupBox.Size = new System.Drawing.Size(570, 146);
+            this.statsGroupBox.TabIndex = 3;
             this.statsGroupBox.TabStop = false;
             this.statsGroupBox.Text = "Gil Statistics";
             // 
             // tableLayoutPanel1
             // 
             this.tableLayoutPanel1.AutoSize = true;
-            this.tableLayoutPanel1.ColumnCount = 4;
-            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
-            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
+            this.tableLayoutPanel1.ColumnCount = 6;
+            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 52.14724F));
+            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 47.85276F));
+            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 101F));
+            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 85F));
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 95F));
-            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 53F));
+            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 148F));
             this.tableLayoutPanel1.Controls.Add(this.gilLabel, 1, 1);
             this.tableLayoutPanel1.Controls.Add(this.label3, 0, 1);
             this.tableLayoutPanel1.Controls.Add(this.salesLabel, 1, 0);
@@ -123,6 +118,10 @@ namespace SalesTracker
             this.tableLayoutPanel1.Controls.Add(this.lastSaleLabel, 1, 2);
             this.tableLayoutPanel1.Controls.Add(this.label2, 0, 2);
             this.tableLayoutPanel1.Controls.Add(this.label10, 2, 2);
+            this.tableLayoutPanel1.Controls.Add(this.label4, 4, 0);
+            this.tableLayoutPanel1.Controls.Add(this.gilPerSaleLabel, 5, 0);
+            this.tableLayoutPanel1.Controls.Add(this.label7, 4, 1);
+            this.tableLayoutPanel1.Controls.Add(this.gilPerItemLabel, 5, 1);
             this.tableLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tableLayoutPanel1.Location = new System.Drawing.Point(3, 16);
             this.tableLayoutPanel1.Name = "tableLayoutPanel1";
@@ -131,13 +130,13 @@ namespace SalesTracker
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 50F));
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
-            this.tableLayoutPanel1.Size = new System.Drawing.Size(317, 127);
+            this.tableLayoutPanel1.Size = new System.Drawing.Size(564, 127);
             this.tableLayoutPanel1.TabIndex = 0;
             // 
             // gilLabel
             // 
             this.gilLabel.AutoSize = true;
-            this.gilLabel.Location = new System.Drawing.Point(87, 38);
+            this.gilLabel.Location = new System.Drawing.Point(73, 38);
             this.gilLabel.Name = "gilLabel";
             this.gilLabel.Size = new System.Drawing.Size(13, 13);
             this.gilLabel.TabIndex = 3;
@@ -148,14 +147,14 @@ namespace SalesTracker
             this.label3.AutoSize = true;
             this.label3.Location = new System.Drawing.Point(3, 38);
             this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(59, 13);
+            this.label3.Size = new System.Drawing.Size(49, 26);
             this.label3.TabIndex = 2;
-            this.label3.Text = "Gil Earned:";
+            this.label3.Text = "Total Gil Earned:";
             // 
             // salesLabel
             // 
             this.salesLabel.AutoSize = true;
-            this.salesLabel.Location = new System.Drawing.Point(87, 0);
+            this.salesLabel.Location = new System.Drawing.Point(73, 0);
             this.salesLabel.Name = "salesLabel";
             this.salesLabel.Size = new System.Drawing.Size(13, 13);
             this.salesLabel.TabIndex = 1;
@@ -166,14 +165,14 @@ namespace SalesTracker
             this.label1.AutoSize = true;
             this.label1.Location = new System.Drawing.Point(3, 0);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(66, 13);
+            this.label1.Size = new System.Drawing.Size(37, 26);
             this.label1.TabIndex = 0;
             this.label1.Text = "Sales Made:";
             // 
             // label5
             // 
             this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(171, 0);
+            this.label5.Location = new System.Drawing.Point(137, 0);
             this.label5.Name = "label5";
             this.label5.Size = new System.Drawing.Size(86, 13);
             this.label5.TabIndex = 6;
@@ -182,7 +181,7 @@ namespace SalesTracker
             // totalSoldLabel
             // 
             this.totalSoldLabel.AutoSize = true;
-            this.totalSoldLabel.Location = new System.Drawing.Point(266, 0);
+            this.totalSoldLabel.Location = new System.Drawing.Point(238, 0);
             this.totalSoldLabel.Name = "totalSoldLabel";
             this.totalSoldLabel.Size = new System.Drawing.Size(13, 13);
             this.totalSoldLabel.TabIndex = 5;
@@ -191,7 +190,7 @@ namespace SalesTracker
             // gilPerHourLabel
             // 
             this.gilPerHourLabel.AutoSize = true;
-            this.gilPerHourLabel.Location = new System.Drawing.Point(266, 38);
+            this.gilPerHourLabel.Location = new System.Drawing.Point(238, 38);
             this.gilPerHourLabel.Name = "gilPerHourLabel";
             this.gilPerHourLabel.Size = new System.Drawing.Size(13, 13);
             this.gilPerHourLabel.TabIndex = 7;
@@ -200,7 +199,7 @@ namespace SalesTracker
             // gilPerDayLabel
             // 
             this.gilPerDayLabel.AutoSize = true;
-            this.gilPerDayLabel.Location = new System.Drawing.Point(266, 76);
+            this.gilPerDayLabel.Location = new System.Drawing.Point(238, 76);
             this.gilPerDayLabel.Name = "gilPerDayLabel";
             this.gilPerDayLabel.Size = new System.Drawing.Size(13, 13);
             this.gilPerDayLabel.TabIndex = 8;
@@ -209,7 +208,7 @@ namespace SalesTracker
             // label9
             // 
             this.label9.AutoSize = true;
-            this.label9.Location = new System.Drawing.Point(171, 38);
+            this.label9.Location = new System.Drawing.Point(137, 38);
             this.label9.Name = "label9";
             this.label9.Size = new System.Drawing.Size(66, 13);
             this.label9.TabIndex = 10;
@@ -218,7 +217,7 @@ namespace SalesTracker
             // lastSaleLabel
             // 
             this.lastSaleLabel.AutoSize = true;
-            this.lastSaleLabel.Location = new System.Drawing.Point(87, 76);
+            this.lastSaleLabel.Location = new System.Drawing.Point(73, 76);
             this.lastSaleLabel.Name = "lastSaleLabel";
             this.lastSaleLabel.Size = new System.Drawing.Size(13, 13);
             this.lastSaleLabel.TabIndex = 9;
@@ -236,11 +235,29 @@ namespace SalesTracker
             // label10
             // 
             this.label10.AutoSize = true;
-            this.label10.Location = new System.Drawing.Point(171, 76);
+            this.label10.Location = new System.Drawing.Point(137, 76);
             this.label10.Name = "label10";
-            this.label10.Size = new System.Drawing.Size(62, 13);
+            this.label10.Size = new System.Drawing.Size(83, 26);
             this.label10.TabIndex = 11;
-            this.label10.Text = "Gil per Day:";
+            this.label10.Text = "Average Gil per Day:";
+            // 
+            // label4
+            // 
+            this.label4.AutoSize = true;
+            this.label4.Location = new System.Drawing.Point(323, 0);
+            this.label4.Name = "label4";
+            this.label4.Size = new System.Drawing.Size(83, 26);
+            this.label4.TabIndex = 12;
+            this.label4.Text = "Average Gil per Sale:";
+            // 
+            // gilPerSaleLabel
+            // 
+            this.gilPerSaleLabel.AutoSize = true;
+            this.gilPerSaleLabel.Location = new System.Drawing.Point(418, 0);
+            this.gilPerSaleLabel.Name = "gilPerSaleLabel";
+            this.gilPerSaleLabel.Size = new System.Drawing.Size(13, 13);
+            this.gilPerSaleLabel.TabIndex = 13;
+            this.gilPerSaleLabel.Text = "0";
             // 
             // salesTab
             // 
@@ -297,6 +314,24 @@ namespace SalesTracker
             this.logListBox.Size = new System.Drawing.Size(576, 535);
             this.logListBox.TabIndex = 0;
             // 
+            // label7
+            // 
+            this.label7.AutoSize = true;
+            this.label7.Location = new System.Drawing.Point(323, 38);
+            this.label7.Name = "label7";
+            this.label7.Size = new System.Drawing.Size(83, 26);
+            this.label7.TabIndex = 14;
+            this.label7.Text = "Average Gil per Item:";
+            // 
+            // gilPerItemLabel
+            // 
+            this.gilPerItemLabel.AutoSize = true;
+            this.gilPerItemLabel.Location = new System.Drawing.Point(418, 38);
+            this.gilPerItemLabel.Name = "gilPerItemLabel";
+            this.gilPerItemLabel.Size = new System.Drawing.Size(13, 13);
+            this.gilPerItemLabel.TabIndex = 15;
+            this.gilPerItemLabel.Text = "0";
+            // 
             // SettingsForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -311,7 +346,6 @@ namespace SalesTracker
             this.Load += new System.EventHandler(this.SettingsForm_Load);
             this.tabControl1.ResumeLayout(false);
             this.statsTab.ResumeLayout(false);
-            this.flowLayoutPanel1.ResumeLayout(false);
             this.statsGroupBox.ResumeLayout(false);
             this.statsGroupBox.PerformLayout();
             this.tableLayoutPanel1.ResumeLayout(false);
@@ -327,25 +361,28 @@ namespace SalesTracker
 
         private System.Windows.Forms.TabControl tabControl1;
         private System.Windows.Forms.TabPage statsTab;
-        private System.Windows.Forms.FlowLayoutPanel flowLayoutPanel1;
+        private System.Windows.Forms.TabPage salesTab;
+        private System.Windows.Forms.DataGridView salesDataGrid;
+        private System.Windows.Forms.Button deleteButton;
+        private System.Windows.Forms.TabPage logTabPage;
+        private System.Windows.Forms.ListBox logListBox;
         private System.Windows.Forms.GroupBox statsGroupBox;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel1;
         private System.Windows.Forms.Label gilLabel;
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.Label salesLabel;
         private System.Windows.Forms.Label label1;
-        private System.Windows.Forms.Label totalSoldLabel;
-        private System.Windows.Forms.Label label2;
-        private System.Windows.Forms.TabPage salesTab;
-        private System.Windows.Forms.DataGridView salesDataGrid;
         private System.Windows.Forms.Label label5;
+        private System.Windows.Forms.Label totalSoldLabel;
         private System.Windows.Forms.Label gilPerHourLabel;
         private System.Windows.Forms.Label gilPerDayLabel;
         private System.Windows.Forms.Label label9;
         private System.Windows.Forms.Label lastSaleLabel;
+        private System.Windows.Forms.Label label2;
         private System.Windows.Forms.Label label10;
-        private System.Windows.Forms.Button deleteButton;
-        private System.Windows.Forms.TabPage logTabPage;
-        private System.Windows.Forms.ListBox logListBox;
+        private System.Windows.Forms.Label label4;
+        private System.Windows.Forms.Label gilPerSaleLabel;
+        private System.Windows.Forms.Label label7;
+        private System.Windows.Forms.Label gilPerItemLabel;
     }
 }

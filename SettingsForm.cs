@@ -22,28 +22,6 @@ namespace SalesTracker
          *  datagrid listing all sales and their data
          */
         public event PropertyChangedEventHandler PropertyChanged;
-         
-        private int _gil;
-        private int _sales;
-        public int Gil
-        {
-            get => _gil;
-            set
-            {
-                _gil = value;
-                OnPropertyChanged("Gil");
-            }
-        }
-
-        public int Sales
-        {
-            get => _sales;
-            set
-            {
-                _sales = value;
-                OnPropertyChanged("Sales");
-            }
-        }
 
         public SettingsForm() 
         {
@@ -59,26 +37,15 @@ namespace SalesTracker
                 null, dataGridView, new object[] {DoubleBuffered});
         }
 
-        public void SaleAdded()
-        {
-            Logger.Info("Update DataGrid");
-            salesDataGrid.Refresh(); //maybe refresh?
-        }
-
-        protected virtual void OnPropertyChanged(string property)
-        {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(property));
-            salesDataGrid.Refresh();
-        }
-
-        private void tabControl1_SelectedIndexChanged(object sender, EventArgs e) 
+        private async void tabControl1_SelectedIndexChanged(object sender, EventArgs e) 
         {
             switch (tabControl1.SelectedIndex) {
                 case 0: // Statistics page
+                    await Task.Run(CalculateStatistics);
                     break;
                 case 1: // Sales List page
                     break;
-                case 2: // log page
+                case 2: // Log page
                     break;
             }
         }
@@ -89,34 +56,45 @@ namespace SalesTracker
         }
 
         private async void salesDataGrid_RowsAdded(object sender, DataGridViewRowsAddedEventArgs e)
-        {
-            lastSaleLabel.Text = salesDataGrid.Rows[salesDataGrid.RowCount - 1].Cells[0].Value.ToString(); ;
-                await CalculateStatistics();
+        { 
+            lastSaleLabel.Text = salesDataGrid.Rows[salesDataGrid.RowCount - 1].Cells[0].Value.ToString();
+            await CalculateStatistics();
         }
 
         private async Task<bool> CalculateStatistics()
         {
             //TODO
-            return await Task.Run<bool>(() =>
+            return await Task.Run(() =>
             {
-                salesLabel.Text = salesDataGrid.RowCount.ToString();
-                int gilsum = 0, itemsum = 0;
+                salesLabel.Text = SalesSettings.Instance.Sales.Count.ToString();
+                int gilSum = 0, itemSum = 0;
                 foreach (SalesSettings.Sale sale in SalesSettings.Instance.Sales)
                 {
-                    gilsum += sale.SoldPrice;
-                    itemsum += sale.AmountSold;
+                    gilSum += sale.SoldPrice;
+                    itemSum += sale.AmountSold;
                 }
 
-                totalSoldLabel.Text = itemsum.ToString();
-                gilLabel.Text = gilsum.ToString();
-                gilPerDayLabel.Text = SalesSettings.Instance.Sales.Where(r => r.SalesDateTime.Date == DateTime.Today.Date).Sum(r => r.SoldPrice).ToString(); // meow?
+                totalSoldLabel.Text = itemSum.ToString();
+                gilLabel.Text = gilSum.ToString();
+                gilPerItemLabel.Text = (gilSum / itemSum).ToString();
+                gilPerSaleLabel.Text = (gilSum / salesDataGrid.RowCount).ToString();
+
+                // list might need to be sorted by date just in case? sorting a bindinglist isn't straightforward
+                var days = (SalesSettings.Instance.Sales.Last().SalesDateTime.Date -
+                            SalesSettings.Instance.Sales.First().SalesDateTime.Date).Days; // needs to be .Date so it'll calculate it right. i dunno.
+                if(days > 0 ) gilPerDayLabel.Text = (gilSum / days).ToString();
+                
+                var hours = (SalesSettings.Instance.Sales.Last().SalesDateTime -
+                             SalesSettings.Instance.Sales.First().SalesDateTime).Hours; // this timespan can't use DateTime.Date ??? Test more.
+                if(hours > 0) gilPerHourLabel.Text = (gilSum / hours).ToString();
+
                 return true; 
             });
         }
 
-        private async void SettingsForm_Load(object sender, EventArgs e) 
+        private async void SettingsForm_Load(object sender, EventArgs e)
         {
-            
+
             if (Logger.LogList != null) logListBox.DataSource = Logger.LogList;
             await Task.Run(() => salesDataGrid.DataSource = SalesSettings.Instance.Sales);
             await Task.Run(CalculateStatistics);

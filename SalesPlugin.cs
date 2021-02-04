@@ -25,7 +25,7 @@ namespace SalesTracker
 
         public override string Name => "Market Board Sales Tracker";
 
-        public override Version Version => new Version(0, 7, 8);
+        public override Version Version => new Version(0, 8, 0);
         public override bool WantButton => true;
         public override string ButtonText => "Log Report";
 
@@ -80,16 +80,25 @@ namespace SalesTracker
 
                         sale.SalesDateTime = DateTime.Now;
                         sale.AmountSold = groups[1].ToString() != "" ? int.Parse(groups[1].ToString()) : 1;
+                        
                         Item item = GetItemFromBytes(e.ChatLogEntry.Bytes);
-                        sale.ItemSold = item.CurrentLocaleName;
-                        sale.ItemId = item.Id;
-                        sale.SoldPrice = int.Parse(groups[2].ToString().Replace(",", ""));
-                        _gil += sale.SoldPrice;
+                        if (item != null)
+                        {
+                            sale.ItemSold = item.CurrentLocaleName;
+                            sale.ItemId = item.Id;
+                            sale.SoldPrice = int.Parse(groups[2].ToString().Replace(",", ""));
+                            _gil += sale.SoldPrice;
 
-                        Logger.Info($"{sale.AmountSold} x {sale.ItemSold} (Item ID: {sale.ItemId}) sold for {sale.SoldPrice:n0}\n");
-                        Logger.Info($"You have made {_saleCount} sales, and {_gil:n0} since starting the bot.");
+                            Logger.Info($"{sale.AmountSold} x {sale.ItemSold} (Item ID: {sale.ItemId}) sold for {sale.SoldPrice:n0}\n");
+                            Logger.Info($"You have made {_saleCount} sales, and {_gil:n0} since starting the bot.");
 
-                        SalesSettings.Instance.Sales.Add(sale); // ???
+                            SalesSettings.Instance.Sales.Add(sale); 
+                        }
+                        else
+                        {
+                            Logger.Error("Could not find item with ");
+                        }
+                        
                     }
                     break;
                 case MessageType.Tell_Receive:
