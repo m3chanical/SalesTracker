@@ -66,6 +66,9 @@ namespace SalesTracker
             //TODO
             return await Task.Run(() =>
             {
+                if (!SalesSettings.Instance.Sales.Any()) // e.g. new install
+                    return false; 
+
                 lastSaleLabel.Text = SalesSettings.Instance.Sales.Last().SalesDateTime.ToString("MM/dd/yy HH:mm");
                 salesLabel.Text = SalesSettings.Instance.Sales.Count.ToString();
                 int gilSum = 0, itemSum = 0;
@@ -89,7 +92,7 @@ namespace SalesTracker
                 var timeElapsed = SalesSettings.Instance.Sales.Last().SalesDateTime
                                     .Subtract(SalesSettings.Instance.Sales.First().SalesDateTime);
 
-                if (timeElapsed.TotalDays > 0 ) gilPerDayLabel.Text = $"{gilSum / timeElapsed.TotalDays:n0}";
+                if (timeElapsed.TotalDays > 0) gilPerDayLabel.Text = timeElapsed.TotalDays < 1 ? $"{gilSum}" : $"{gilSum / timeElapsed.TotalDays:n0}";
                 if(timeElapsed.TotalHours > 0) gilPerHourLabel.Text = $"{gilSum / timeElapsed.TotalHours:n0}";
 
                 return true; 
