@@ -10,6 +10,8 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using ff14bot;
+using ff14bot.Objects;
 using Newtonsoft.Json;
 
 namespace SalesTracker
@@ -25,7 +27,7 @@ namespace SalesTracker
 
         public override string Name => "Market Board Sales Tracker";
 
-        public override Version Version => new Version(0, 8, 0);
+        public override Version Version => new Version(1, 1, 0);
         public override bool WantButton => true;
         public override string ButtonText => "Log Report";
 
@@ -35,7 +37,7 @@ namespace SalesTracker
             {
                 _form = new SettingsForm()
                 {
-                    Text = "RB Statistics v" + Version,
+                    Text = $"RB Statistics v{Version} {Core.Me.Name}",
                     
                 };
                 _form.Closed += (o, e) => { _form = null; };
@@ -75,7 +77,7 @@ namespace SalesTracker
                     if (match.Success)
                     {
                         _saleCount++;
-                        SalesSettings.Sale sale = new SalesSettings.Sale();
+                        Sale sale = new Sale();
                         var groups = match.Groups;
 
                         sale.SalesDateTime = DateTime.Now;

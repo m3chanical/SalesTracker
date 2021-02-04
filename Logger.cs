@@ -19,7 +19,9 @@ namespace SalesTracker
     }
     public class Logger
     {
-        public static BindingList<string> LogList = new BindingList<string>();
+        private static List<string> _logList;
+        public static List<string> LogList => _logList ?? (_logList = new List<string>());
+
         internal static bool log_verbose = true;
         internal static string Name => "Sales Report";
         internal static string Prefix => $"[{Name}] ";
@@ -27,10 +29,10 @@ namespace SalesTracker
             rlogging.Write(c, Prefix + string.Format(message, args));
 
             var logStr = "[" + DateTime.Now + "]" + " " + Prefix + string.Format(message, args);
-            if (LogList.Count >= 100)
-                LogList.RemoveAt(0);
-            if (!LogList.Contains(logStr))
-                LogList.Add(logStr);
+            if (_logList.Count >= 100)
+                _logList.RemoveAt(0);
+            if (!_logList.Contains(logStr))
+                _logList.Add(logStr);
         }
 
         [StringFormatMethod("format")]

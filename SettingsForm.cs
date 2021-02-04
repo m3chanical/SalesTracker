@@ -13,29 +13,24 @@ using System.Windows.Forms;
 
 namespace SalesTracker
 {
-    public partial class SettingsForm : Form, INotifyPropertyChanged
+    public partial class SettingsForm : Form
     {
-        /*
-         * TODO:
-         *  average gil per sale
-         *  gil per hour
-         *  maybe track total gil delta
-         *  datagrid listing all sales and their data
-         */
-        public event PropertyChangedEventHandler PropertyChanged;
-
         public SettingsForm() 
         {
             InitializeComponent();
             SetDoubleBuffer(salesDataGrid, true);
-            salesDataGrid.RowsAdded += salesDataGrid_RowsAdded;
+
+            logListBox.DataSource = Logger.LogList;
+            salesDataGrid.DataSource = SalesSettings.Instance.Sales;
         }
 
         private void SetDoubleBuffer(Control dataGridView, bool doublebuffered)
         {
             typeof(Control).InvokeMember("DoubleBuffered",
                 BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.SetProperty,
-                null, dataGridView, new object[] {DoubleBuffered});
+                null, 
+                dataGridView, 
+                new object[] {doublebuffered});
         }
 
         private async void tabControl1_SelectedIndexChanged(object sender, EventArgs e) 
@@ -48,22 +43,13 @@ namespace SalesTracker
                     break;
                 case 2: // Log page
                     break;
+                default:
+                    return;
             }
-        }
-
-        private void deleteButton_Click(object sender, EventArgs e)
-        {
-            //TODO
-        }
-
-        private async void salesDataGrid_RowsAdded(object sender, DataGridViewRowsAddedEventArgs e)
-        { 
-            await CalculateStatistics();
         }
 
         private async Task<bool> CalculateStatistics()
         {
-            //TODO
             return await Task.Run(() =>
             {
                 if (!SalesSettings.Instance.Sales.Any()) // e.g. new install
@@ -72,7 +58,7 @@ namespace SalesTracker
                 lastSaleLabel.Text = SalesSettings.Instance.Sales.Last().SalesDateTime.ToString("MM/dd/yy HH:mm");
                 salesLabel.Text = SalesSettings.Instance.Sales.Count.ToString();
                 int gilSum = 0, itemSum = 0;
-                foreach (SalesSettings.Sale sale in SalesSettings.Instance.Sales)
+                foreach (Sale sale in SalesSettings.Instance.Sales)
                 {
                     gilSum += sale.SoldPrice;
                     itemSum += sale.AmountSold;
@@ -101,10 +87,14 @@ namespace SalesTracker
 
         private async void SettingsForm_Load(object sender, EventArgs e)
         {
-
-            if (Logger.LogList != null) logListBox.DataSource = Logger.LogList;
-            await Task.Run(() => salesDataGrid.DataSource = SalesSettings.Instance.Sales);
+            // update dgv
             await Task.Run(CalculateStatistics);
+        }
+
+        private void timer1_Tick(object sender, EventArgs e) {
+            // update dgv
+            logListBox.Refresh();
+            salesDataGrid.Refresh(); // not sure if Refresh works. might need Upate() or to simply null it and re-add.
         }
     }
 }
