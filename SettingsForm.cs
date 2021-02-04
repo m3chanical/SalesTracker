@@ -57,7 +57,6 @@ namespace SalesTracker
 
         private async void salesDataGrid_RowsAdded(object sender, DataGridViewRowsAddedEventArgs e)
         { 
-            lastSaleLabel.Text = salesDataGrid.Rows[salesDataGrid.RowCount - 1].Cells[0].Value.ToString();
             await CalculateStatistics();
         }
 
@@ -66,6 +65,7 @@ namespace SalesTracker
             //TODO
             return await Task.Run(() =>
             {
+                lastSaleLabel.Text = ((DateTime)salesDataGrid.Rows[salesDataGrid.RowCount - 1].Cells[0].Value).ToString("g");
                 salesLabel.Text = SalesSettings.Instance.Sales.Count.ToString();
                 int gilSum = 0, itemSum = 0;
                 foreach (SalesSettings.Sale sale in SalesSettings.Instance.Sales)
