@@ -19,7 +19,7 @@ namespace SalesTracker
     }
     public class Logger
     {
-        private static List<string> _logList;
+        private static List<string> _logList = new List<string>();
         public static List<string> LogList => _logList ?? (_logList = new List<string>());
 
         internal static bool log_verbose = true;
