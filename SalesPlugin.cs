@@ -18,7 +18,7 @@ namespace SalesTracker
     {
         private int _saleCount;
         private int _gil;
-        private readonly Regex _mbRegex = new Regex(@"The (\d*)(.*) you put up for sale in the (.*) markets .* sold for (.*) gil .*", RegexOptions.Compiled); 
+        private readonly Regex _mbRegex = new Regex(@"The (\d{0,3}).+sold for ([\d,]+) gil", RegexOptions.Compiled); 
         private SettingsForm _form;
 
         public override string Author => "Sinbeard";
@@ -81,13 +81,12 @@ namespace SalesTracker
                         sale.SalesDateTime = DateTime.Now;
                         sale.AmountSold = groups[1].ToString() != "" ? int.Parse(groups[1].ToString()) : 1;
                         Item item = GetItemFromBytes(e.ChatLogEntry.Bytes);
-                        sale.ItemSold = item == null ? groups[2].ToString() : item.CurrentLocaleName;
-                        sale.ItemId = item?.Id ?? 0;
-                        sale.SoldPrice = int.Parse(groups[4].ToString().Replace(",", ""));
+                        sale.ItemSold = item.CurrentLocaleName;
+                        sale.ItemId = item.Id;
+                        sale.SoldPrice = int.Parse(groups[2].ToString().Replace(",", ""));
                         _gil += sale.SoldPrice;
-                        sale.MarketSold = groups[3].ToString();
 
-                        Logger.Info($"{sale.AmountSold} x {sale.ItemSold} (Item ID: {sale.ItemId}) sold for {sale.SoldPrice:n0} on {sale.MarketSold} market\n");
+                        Logger.Info($"{sale.AmountSold} x {sale.ItemSold} (Item ID: {sale.ItemId}) sold for {sale.SoldPrice:n0}\n");
                         Logger.Info($"You have made {_saleCount} sales, and {_gil:n0} since starting the bot.");
 
                         SalesSettings.Instance.Sales.Add(sale); // ???
@@ -129,9 +128,8 @@ namespace SalesTracker
                 itemId -= 1000000;
                 HQ = true;
             }
-
-            Item item = DataManager.GetItem(itemId, HQ);
-            return item;
+            
+            return DataManager.GetItem(itemId, HQ);
         }
     }
 }
