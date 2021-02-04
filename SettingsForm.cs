@@ -4,6 +4,7 @@ using System.ComponentModel;
 using System.Data;
 using System.Diagnostics;
 using System.Drawing;
+using System.Globalization;
 using System.Linq;
 using System.Reflection;
 using System.Text;
@@ -65,7 +66,7 @@ namespace SalesTracker
             //TODO
             return await Task.Run(() =>
             {
-                lastSaleLabel.Text = ((DateTime)salesDataGrid.Rows[salesDataGrid.RowCount - 1].Cells[0].Value).ToString("MM/dd/yy HH:mm");
+                lastSaleLabel.Text = SalesSettings.Instance.Sales.Last().SalesDateTime.ToString("MM/dd/yy HH:mm");
                 salesLabel.Text = SalesSettings.Instance.Sales.Count.ToString();
                 int gilSum = 0, itemSum = 0;
                 foreach (SalesSettings.Sale sale in SalesSettings.Instance.Sales)
@@ -74,20 +75,22 @@ namespace SalesTracker
                     itemSum += sale.AmountSold;
                 }
 
+                totalSoldLabel.Text = itemSum.ToString();
+                gilLabel.Text = gilSum.ToString();
+                if(itemSum > 0) gilPerItemLabel.Text = (gilSum / itemSum).ToString();
+                if(SalesSettings.Instance.Sales.Count > 0 ) gilPerSaleLabel.Text = (gilSum / SalesSettings.Instance.Sales.Count).ToString();
+                
                 totalSoldLabel.Text = $"{itemSum}";
                 gilLabel.Text = $"{gilSum:n0}";
                 if (itemSum != 0)
                     gilPerItemLabel.Text = $"{gilSum / (itemSum):n0}"; 
-                gilPerSaleLabel.Text = $"{gilSum / salesDataGrid.RowCount:n0}";
+                gilPerSaleLabel.Text = $"{gilSum / SalesSettings.Instance.Sales.Count:n0}";
 
-                // list might need to be sorted by date just in case? sorting a bindinglist isn't straightforward
-                var days = (SalesSettings.Instance.Sales.Last().SalesDateTime.Date -
-                            SalesSettings.Instance.Sales.First().SalesDateTime.Date).Days; // needs to be .Date so it'll calculate it right. i dunno.
-                if(days > 0 ) gilPerDayLabel.Text = $"{gilSum / days:n0}";
-                
-                var hours = (SalesSettings.Instance.Sales.Last().SalesDateTime -
-                             SalesSettings.Instance.Sales.First().SalesDateTime).Hours; // this timespan can't use DateTime.Date ??? Test more.
-                if(hours > 0) gilPerHourLabel.Text = $"{gilSum / hours:n0}";
+                var timeElapsed = SalesSettings.Instance.Sales.Last().SalesDateTime
+                                    .Subtract(SalesSettings.Instance.Sales.First().SalesDateTime);
+
+                if (timeElapsed.TotalDays > 0 ) gilPerDayLabel.Text = $"{gilSum / timeElapsed.TotalDays:n0}";
+                if(timeElapsed.TotalHours > 0) gilPerHourLabel.Text = $"{gilSum / timeElapsed.TotalHours:n0}";
 
                 return true; 
             });

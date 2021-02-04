@@ -45,13 +45,13 @@ namespace SalesTracker
             this.label10 = new System.Windows.Forms.Label();
             this.label4 = new System.Windows.Forms.Label();
             this.gilPerSaleLabel = new System.Windows.Forms.Label();
+            this.label7 = new System.Windows.Forms.Label();
+            this.gilPerItemLabel = new System.Windows.Forms.Label();
             this.salesTab = new System.Windows.Forms.TabPage();
             this.deleteButton = new System.Windows.Forms.Button();
             this.salesDataGrid = new System.Windows.Forms.DataGridView();
             this.logTabPage = new System.Windows.Forms.TabPage();
             this.logListBox = new System.Windows.Forms.ListBox();
-            this.label7 = new System.Windows.Forms.Label();
-            this.gilPerItemLabel = new System.Windows.Forms.Label();
             this.tabControl1.SuspendLayout();
             this.statsTab.SuspendLayout();
             this.statsGroupBox.SuspendLayout();
@@ -105,7 +105,7 @@ namespace SalesTracker
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 101F));
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 85F));
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 95F));
-            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 148F));
+            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 149F));
             this.tableLayoutPanel1.Controls.Add(this.gilLabel, 1, 1);
             this.tableLayoutPanel1.Controls.Add(this.label3, 0, 1);
             this.tableLayoutPanel1.Controls.Add(this.salesLabel, 1, 0);
@@ -136,7 +136,7 @@ namespace SalesTracker
             // gilLabel
             // 
             this.gilLabel.AutoSize = true;
-            this.gilLabel.Location = new System.Drawing.Point(73, 38);
+            this.gilLabel.Location = new System.Drawing.Point(72, 38);
             this.gilLabel.Name = "gilLabel";
             this.gilLabel.Size = new System.Drawing.Size(13, 13);
             this.gilLabel.TabIndex = 3;
@@ -154,7 +154,7 @@ namespace SalesTracker
             // salesLabel
             // 
             this.salesLabel.AutoSize = true;
-            this.salesLabel.Location = new System.Drawing.Point(73, 0);
+            this.salesLabel.Location = new System.Drawing.Point(72, 0);
             this.salesLabel.Name = "salesLabel";
             this.salesLabel.Size = new System.Drawing.Size(13, 13);
             this.salesLabel.TabIndex = 1;
@@ -172,7 +172,7 @@ namespace SalesTracker
             // label5
             // 
             this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(137, 0);
+            this.label5.Location = new System.Drawing.Point(136, 0);
             this.label5.Name = "label5";
             this.label5.Size = new System.Drawing.Size(86, 13);
             this.label5.TabIndex = 6;
@@ -181,7 +181,7 @@ namespace SalesTracker
             // totalSoldLabel
             // 
             this.totalSoldLabel.AutoSize = true;
-            this.totalSoldLabel.Location = new System.Drawing.Point(238, 0);
+            this.totalSoldLabel.Location = new System.Drawing.Point(237, 0);
             this.totalSoldLabel.Name = "totalSoldLabel";
             this.totalSoldLabel.Size = new System.Drawing.Size(13, 13);
             this.totalSoldLabel.TabIndex = 5;
@@ -190,7 +190,7 @@ namespace SalesTracker
             // gilPerHourLabel
             // 
             this.gilPerHourLabel.AutoSize = true;
-            this.gilPerHourLabel.Location = new System.Drawing.Point(238, 38);
+            this.gilPerHourLabel.Location = new System.Drawing.Point(237, 38);
             this.gilPerHourLabel.Name = "gilPerHourLabel";
             this.gilPerHourLabel.Size = new System.Drawing.Size(13, 13);
             this.gilPerHourLabel.TabIndex = 7;
@@ -199,7 +199,7 @@ namespace SalesTracker
             // gilPerDayLabel
             // 
             this.gilPerDayLabel.AutoSize = true;
-            this.gilPerDayLabel.Location = new System.Drawing.Point(238, 76);
+            this.gilPerDayLabel.Location = new System.Drawing.Point(237, 76);
             this.gilPerDayLabel.Name = "gilPerDayLabel";
             this.gilPerDayLabel.Size = new System.Drawing.Size(13, 13);
             this.gilPerDayLabel.TabIndex = 8;
@@ -208,16 +208,16 @@ namespace SalesTracker
             // label9
             // 
             this.label9.AutoSize = true;
-            this.label9.Location = new System.Drawing.Point(137, 38);
+            this.label9.Location = new System.Drawing.Point(136, 38);
             this.label9.Name = "label9";
-            this.label9.Size = new System.Drawing.Size(66, 13);
+            this.label9.Size = new System.Drawing.Size(83, 26);
             this.label9.TabIndex = 10;
-            this.label9.Text = "Gil per Hour:";
+            this.label9.Text = "Average Gil per Hour:";
             // 
             // lastSaleLabel
             // 
             this.lastSaleLabel.AutoSize = true;
-            this.lastSaleLabel.Location = new System.Drawing.Point(73, 76);
+            this.lastSaleLabel.Location = new System.Drawing.Point(72, 76);
             this.lastSaleLabel.Name = "lastSaleLabel";
             this.lastSaleLabel.Size = new System.Drawing.Size(13, 13);
             this.lastSaleLabel.TabIndex = 9;
@@ -235,7 +235,7 @@ namespace SalesTracker
             // label10
             // 
             this.label10.AutoSize = true;
-            this.label10.Location = new System.Drawing.Point(137, 76);
+            this.label10.Location = new System.Drawing.Point(136, 76);
             this.label10.Name = "label10";
             this.label10.Size = new System.Drawing.Size(83, 26);
             this.label10.TabIndex = 11;
@@ -244,7 +244,7 @@ namespace SalesTracker
             // label4
             // 
             this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(323, 0);
+            this.label4.Location = new System.Drawing.Point(322, 0);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(83, 26);
             this.label4.TabIndex = 12;
@@ -253,11 +253,29 @@ namespace SalesTracker
             // gilPerSaleLabel
             // 
             this.gilPerSaleLabel.AutoSize = true;
-            this.gilPerSaleLabel.Location = new System.Drawing.Point(418, 0);
+            this.gilPerSaleLabel.Location = new System.Drawing.Point(417, 0);
             this.gilPerSaleLabel.Name = "gilPerSaleLabel";
             this.gilPerSaleLabel.Size = new System.Drawing.Size(13, 13);
             this.gilPerSaleLabel.TabIndex = 13;
             this.gilPerSaleLabel.Text = "0";
+            // 
+            // label7
+            // 
+            this.label7.AutoSize = true;
+            this.label7.Location = new System.Drawing.Point(322, 38);
+            this.label7.Name = "label7";
+            this.label7.Size = new System.Drawing.Size(83, 26);
+            this.label7.TabIndex = 14;
+            this.label7.Text = "Average Gil per Item:";
+            // 
+            // gilPerItemLabel
+            // 
+            this.gilPerItemLabel.AutoSize = true;
+            this.gilPerItemLabel.Location = new System.Drawing.Point(417, 38);
+            this.gilPerItemLabel.Name = "gilPerItemLabel";
+            this.gilPerItemLabel.Size = new System.Drawing.Size(13, 13);
+            this.gilPerItemLabel.TabIndex = 15;
+            this.gilPerItemLabel.Text = "0";
             // 
             // salesTab
             // 
@@ -313,24 +331,6 @@ namespace SalesTracker
             this.logListBox.Name = "logListBox";
             this.logListBox.Size = new System.Drawing.Size(576, 535);
             this.logListBox.TabIndex = 0;
-            // 
-            // label7
-            // 
-            this.label7.AutoSize = true;
-            this.label7.Location = new System.Drawing.Point(323, 38);
-            this.label7.Name = "label7";
-            this.label7.Size = new System.Drawing.Size(83, 26);
-            this.label7.TabIndex = 14;
-            this.label7.Text = "Average Gil per Item:";
-            // 
-            // gilPerItemLabel
-            // 
-            this.gilPerItemLabel.AutoSize = true;
-            this.gilPerItemLabel.Location = new System.Drawing.Point(418, 38);
-            this.gilPerItemLabel.Name = "gilPerItemLabel";
-            this.gilPerItemLabel.Size = new System.Drawing.Size(13, 13);
-            this.gilPerItemLabel.TabIndex = 15;
-            this.gilPerItemLabel.Text = "0";
             // 
             // SettingsForm
             // 
