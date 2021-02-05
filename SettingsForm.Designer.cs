@@ -52,14 +52,14 @@ namespace SalesTracker
             this.salesDataGrid = new System.Windows.Forms.DataGridView();
             this.logTabPage = new System.Windows.Forms.TabPage();
             this.logListBox = new System.Windows.Forms.ListBox();
-            this.settingsFormBindingSource = new System.Windows.Forms.BindingSource(this.components);
+            this.timer1 = new System.Windows.Forms.Timer(this.components);
             this.saleBindingSource = new System.Windows.Forms.BindingSource(this.components);
+            this.settingsFormBindingSource = new System.Windows.Forms.BindingSource(this.components);
             this.salesDateTimeDataGridViewTextBoxColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.amountSoldDataGridViewTextBoxColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.itemSoldDataGridViewTextBoxColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.itemIdDataGridViewTextBoxColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.soldPriceDataGridViewTextBoxColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.timer1 = new System.Windows.Forms.Timer(this.components);
             this.tabControl1.SuspendLayout();
             this.statsTab.SuspendLayout();
             this.statsGroupBox.SuspendLayout();
@@ -67,8 +67,8 @@ namespace SalesTracker
             this.salesTab.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.salesDataGrid)).BeginInit();
             this.logTabPage.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.settingsFormBindingSource)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.saleBindingSource)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.settingsFormBindingSource)).BeginInit();
             this.SuspendLayout();
             // 
             // tabControl1
@@ -115,7 +115,7 @@ namespace SalesTracker
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 101F));
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 85F));
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 95F));
-            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 150F));
+            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 151F));
             this.tableLayoutPanel1.Controls.Add(this.gilLabel, 1, 1);
             this.tableLayoutPanel1.Controls.Add(this.label3, 0, 1);
             this.tableLayoutPanel1.Controls.Add(this.salesLabel, 1, 0);
@@ -146,7 +146,7 @@ namespace SalesTracker
             // gilLabel
             // 
             this.gilLabel.AutoSize = true;
-            this.gilLabel.Location = new System.Drawing.Point(72, 38);
+            this.gilLabel.Location = new System.Drawing.Point(71, 38);
             this.gilLabel.Name = "gilLabel";
             this.gilLabel.Size = new System.Drawing.Size(13, 13);
             this.gilLabel.TabIndex = 3;
@@ -164,7 +164,7 @@ namespace SalesTracker
             // salesLabel
             // 
             this.salesLabel.AutoSize = true;
-            this.salesLabel.Location = new System.Drawing.Point(72, 0);
+            this.salesLabel.Location = new System.Drawing.Point(71, 0);
             this.salesLabel.Name = "salesLabel";
             this.salesLabel.Size = new System.Drawing.Size(13, 13);
             this.salesLabel.TabIndex = 1;
@@ -182,7 +182,7 @@ namespace SalesTracker
             // label5
             // 
             this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(135, 0);
+            this.label5.Location = new System.Drawing.Point(134, 0);
             this.label5.Name = "label5";
             this.label5.Size = new System.Drawing.Size(86, 13);
             this.label5.TabIndex = 6;
@@ -191,7 +191,7 @@ namespace SalesTracker
             // totalSoldLabel
             // 
             this.totalSoldLabel.AutoSize = true;
-            this.totalSoldLabel.Location = new System.Drawing.Point(236, 0);
+            this.totalSoldLabel.Location = new System.Drawing.Point(235, 0);
             this.totalSoldLabel.Name = "totalSoldLabel";
             this.totalSoldLabel.Size = new System.Drawing.Size(13, 13);
             this.totalSoldLabel.TabIndex = 5;
@@ -200,7 +200,7 @@ namespace SalesTracker
             // gilPerHourLabel
             // 
             this.gilPerHourLabel.AutoSize = true;
-            this.gilPerHourLabel.Location = new System.Drawing.Point(236, 38);
+            this.gilPerHourLabel.Location = new System.Drawing.Point(235, 38);
             this.gilPerHourLabel.Name = "gilPerHourLabel";
             this.gilPerHourLabel.Size = new System.Drawing.Size(13, 13);
             this.gilPerHourLabel.TabIndex = 7;
@@ -209,7 +209,7 @@ namespace SalesTracker
             // gilPerDayLabel
             // 
             this.gilPerDayLabel.AutoSize = true;
-            this.gilPerDayLabel.Location = new System.Drawing.Point(236, 76);
+            this.gilPerDayLabel.Location = new System.Drawing.Point(235, 76);
             this.gilPerDayLabel.Name = "gilPerDayLabel";
             this.gilPerDayLabel.Size = new System.Drawing.Size(13, 13);
             this.gilPerDayLabel.TabIndex = 8;
@@ -218,7 +218,7 @@ namespace SalesTracker
             // label9
             // 
             this.label9.AutoSize = true;
-            this.label9.Location = new System.Drawing.Point(135, 38);
+            this.label9.Location = new System.Drawing.Point(134, 38);
             this.label9.Name = "label9";
             this.label9.Size = new System.Drawing.Size(83, 26);
             this.label9.TabIndex = 10;
@@ -227,7 +227,7 @@ namespace SalesTracker
             // lastSaleLabel
             // 
             this.lastSaleLabel.AutoSize = true;
-            this.lastSaleLabel.Location = new System.Drawing.Point(72, 76);
+            this.lastSaleLabel.Location = new System.Drawing.Point(71, 76);
             this.lastSaleLabel.Name = "lastSaleLabel";
             this.lastSaleLabel.Size = new System.Drawing.Size(13, 13);
             this.lastSaleLabel.TabIndex = 9;
@@ -245,7 +245,7 @@ namespace SalesTracker
             // label10
             // 
             this.label10.AutoSize = true;
-            this.label10.Location = new System.Drawing.Point(135, 76);
+            this.label10.Location = new System.Drawing.Point(134, 76);
             this.label10.Name = "label10";
             this.label10.Size = new System.Drawing.Size(83, 26);
             this.label10.TabIndex = 11;
@@ -254,7 +254,7 @@ namespace SalesTracker
             // label4
             // 
             this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(321, 0);
+            this.label4.Location = new System.Drawing.Point(320, 0);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(83, 26);
             this.label4.TabIndex = 12;
@@ -263,7 +263,7 @@ namespace SalesTracker
             // gilPerSaleLabel
             // 
             this.gilPerSaleLabel.AutoSize = true;
-            this.gilPerSaleLabel.Location = new System.Drawing.Point(416, 0);
+            this.gilPerSaleLabel.Location = new System.Drawing.Point(415, 0);
             this.gilPerSaleLabel.Name = "gilPerSaleLabel";
             this.gilPerSaleLabel.Size = new System.Drawing.Size(13, 13);
             this.gilPerSaleLabel.TabIndex = 13;
@@ -272,7 +272,7 @@ namespace SalesTracker
             // label7
             // 
             this.label7.AutoSize = true;
-            this.label7.Location = new System.Drawing.Point(321, 38);
+            this.label7.Location = new System.Drawing.Point(320, 38);
             this.label7.Name = "label7";
             this.label7.Size = new System.Drawing.Size(83, 26);
             this.label7.TabIndex = 14;
@@ -281,7 +281,7 @@ namespace SalesTracker
             // gilPerItemLabel
             // 
             this.gilPerItemLabel.AutoSize = true;
-            this.gilPerItemLabel.Location = new System.Drawing.Point(416, 38);
+            this.gilPerItemLabel.Location = new System.Drawing.Point(415, 38);
             this.gilPerItemLabel.Name = "gilPerItemLabel";
             this.gilPerItemLabel.Size = new System.Drawing.Size(13, 13);
             this.gilPerItemLabel.TabIndex = 15;
@@ -338,13 +338,19 @@ namespace SalesTracker
             this.logListBox.Size = new System.Drawing.Size(576, 535);
             this.logListBox.TabIndex = 0;
             // 
-            // settingsFormBindingSource
+            // timer1
             // 
-            this.settingsFormBindingSource.DataSource = typeof(SalesTracker.SettingsForm);
+            this.timer1.Enabled = true;
+            this.timer1.Interval = 1000;
+            this.timer1.Tick += new System.EventHandler(this.timer1_Tick);
             // 
             // saleBindingSource
             // 
             this.saleBindingSource.DataSource = typeof(SalesTracker.Sale);
+            // 
+            // settingsFormBindingSource
+            // 
+            this.settingsFormBindingSource.DataSource = typeof(SalesTracker.SettingsForm);
             // 
             // salesDateTimeDataGridViewTextBoxColumn
             // 
@@ -352,6 +358,7 @@ namespace SalesTracker
             this.salesDateTimeDataGridViewTextBoxColumn.HeaderText = "Time";
             this.salesDateTimeDataGridViewTextBoxColumn.Name = "salesDateTimeDataGridViewTextBoxColumn";
             this.salesDateTimeDataGridViewTextBoxColumn.ReadOnly = true;
+            this.salesDateTimeDataGridViewTextBoxColumn.ToolTipText = "Time this sale occurred.";
             // 
             // amountSoldDataGridViewTextBoxColumn
             // 
@@ -359,6 +366,7 @@ namespace SalesTracker
             this.amountSoldDataGridViewTextBoxColumn.HeaderText = "Amount";
             this.amountSoldDataGridViewTextBoxColumn.Name = "amountSoldDataGridViewTextBoxColumn";
             this.amountSoldDataGridViewTextBoxColumn.ReadOnly = true;
+            this.amountSoldDataGridViewTextBoxColumn.ToolTipText = "Amount of items sold this sale.";
             // 
             // itemSoldDataGridViewTextBoxColumn
             // 
@@ -366,6 +374,7 @@ namespace SalesTracker
             this.itemSoldDataGridViewTextBoxColumn.HeaderText = "Item";
             this.itemSoldDataGridViewTextBoxColumn.Name = "itemSoldDataGridViewTextBoxColumn";
             this.itemSoldDataGridViewTextBoxColumn.ReadOnly = true;
+            this.itemSoldDataGridViewTextBoxColumn.ToolTipText = "Item name of the sale.";
             // 
             // itemIdDataGridViewTextBoxColumn
             // 
@@ -373,6 +382,7 @@ namespace SalesTracker
             this.itemIdDataGridViewTextBoxColumn.HeaderText = "ItemId";
             this.itemIdDataGridViewTextBoxColumn.Name = "itemIdDataGridViewTextBoxColumn";
             this.itemIdDataGridViewTextBoxColumn.ReadOnly = true;
+            this.itemIdDataGridViewTextBoxColumn.ToolTipText = "Item Id of the sold item.";
             // 
             // soldPriceDataGridViewTextBoxColumn
             // 
@@ -380,12 +390,7 @@ namespace SalesTracker
             this.soldPriceDataGridViewTextBoxColumn.HeaderText = "Price";
             this.soldPriceDataGridViewTextBoxColumn.Name = "soldPriceDataGridViewTextBoxColumn";
             this.soldPriceDataGridViewTextBoxColumn.ReadOnly = true;
-            // 
-            // timer1
-            // 
-            this.timer1.Enabled = true;
-            this.timer1.Interval = 1000;
-            this.timer1.Tick += new System.EventHandler(this.timer1_Tick);
+            this.soldPriceDataGridViewTextBoxColumn.ToolTipText = "Total price of the sale.";
             // 
             // SettingsForm
             // 
@@ -408,8 +413,8 @@ namespace SalesTracker
             this.salesTab.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.salesDataGrid)).EndInit();
             this.logTabPage.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)(this.settingsFormBindingSource)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.saleBindingSource)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.settingsFormBindingSource)).EndInit();
             this.ResumeLayout(false);
 
         }
@@ -442,11 +447,11 @@ namespace SalesTracker
         private System.Windows.Forms.Label gilPerItemLabel;
         private System.Windows.Forms.BindingSource settingsFormBindingSource;
         private System.Windows.Forms.BindingSource saleBindingSource;
+        private System.Windows.Forms.Timer timer1;
         private System.Windows.Forms.DataGridViewTextBoxColumn salesDateTimeDataGridViewTextBoxColumn;
         private System.Windows.Forms.DataGridViewTextBoxColumn amountSoldDataGridViewTextBoxColumn;
         private System.Windows.Forms.DataGridViewTextBoxColumn itemSoldDataGridViewTextBoxColumn;
         private System.Windows.Forms.DataGridViewTextBoxColumn itemIdDataGridViewTextBoxColumn;
         private System.Windows.Forms.DataGridViewTextBoxColumn soldPriceDataGridViewTextBoxColumn;
-        private System.Windows.Forms.Timer timer1;
     }
 }

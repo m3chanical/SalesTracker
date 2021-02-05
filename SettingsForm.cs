@@ -22,6 +22,8 @@ namespace SalesTracker
 
             logListBox.DataSource = Logger.LogList;
             salesDataGrid.DataSource = SalesSettings.Instance.Sales;
+            salesDataGrid.Columns[0].DefaultCellStyle.Format = "MM'/'dd'/'yy HH:mm";
+            salesDataGrid.Columns[4].DefaultCellStyle.Format = "n0";
         }
 
         private void SetDoubleBuffer(Control dataGridView, bool doublebuffered)
@@ -75,7 +77,8 @@ namespace SalesTracker
                     gilPerItemLabel.Text = $"{gilSum / (itemSum):n0}"; 
                 gilPerSaleLabel.Text = $"{gilSum / SalesSettings.Instance.Sales.Count:n0}";
 
-                var timeElapsed = SalesSettings.Instance.Sales.Last().SalesDateTime
+                // datetime.last might give 'erroneous' data if it's been a while since a sale occurred
+                var timeElapsed = DateTime.Now
                                     .Subtract(SalesSettings.Instance.Sales.First().SalesDateTime);
 
                 if (timeElapsed.TotalDays > 0) gilPerDayLabel.Text = timeElapsed.TotalDays < 1 ? $"{gilSum:n0}" : $"{gilSum / timeElapsed.TotalDays:n0}";
@@ -93,8 +96,9 @@ namespace SalesTracker
 
         private void timer1_Tick(object sender, EventArgs e) {
             // update dgv
-            logListBox.Refresh();
-            salesDataGrid.Refresh(); // not sure if Refresh works. might need Upate() or to simply null it and re-add.
+            //Logger.Info("Timer Ticked.");
+            logListBox.Update();
+            salesDataGrid.Update(); // Refresh() does not work. maybe Upate() or to simply null it and re-add?
         }
     }
 }
