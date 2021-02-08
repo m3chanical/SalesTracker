@@ -26,6 +26,19 @@ namespace SalesTracker
             salesDataGrid.Columns[4].DefaultCellStyle.Format = "n0";
         }
 
+        public void UpdateSalesDgv()
+        {
+            salesDataGrid.BeginInvoke((Action) delegate
+            {
+                //Logger.Info("Begun Invoke for Dgv");
+                salesDataGrid.RowHeadersWidthSizeMode = DataGridViewRowHeadersWidthSizeMode.DisableResizing;
+                salesDataGrid.DataSource = typeof(List<Sale>); // list<sale> or Sale?
+                salesDataGrid.DataSource = SalesSettings.Instance.Sales;
+                salesDataGrid.Update();
+                salesDataGrid.RowHeadersWidthSizeMode = DataGridViewRowHeadersWidthSizeMode.EnableResizing;
+            });
+        }
+
         private void SetDoubleBuffer(Control dataGridView, bool doublebuffered)
         {
             typeof(Control).InvokeMember("DoubleBuffered",
@@ -100,5 +113,6 @@ namespace SalesTracker
             logListBox.Update();
             salesDataGrid.Update(); // Refresh() does not work. maybe Upate() or to simply null it and re-add?
         }
+
     }
 }

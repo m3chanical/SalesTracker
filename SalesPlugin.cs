@@ -27,7 +27,7 @@ namespace SalesTracker
 
         public override string Name => "Market Board Sales Tracker";
 
-        public override Version Version => new Version(1, 1, 0);
+        public override Version Version => new Version(1, 5, 0);
         public override bool WantButton => true;
         public override string ButtonText => "Log Report";
 
@@ -95,6 +95,8 @@ namespace SalesTracker
                             Logger.Info($"You have made {_saleCount} sales, and {_gil:n0} since starting the bot.");
 
                             SalesSettings.Instance.Sales.Add(sale); 
+                            SalesSettings.Instance.Save();
+                            _form?.UpdateSalesDgv();
                         }
                         else
                         {
