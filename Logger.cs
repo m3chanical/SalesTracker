@@ -14,7 +14,7 @@ namespace SalesTracker
     {
         internal static Color Error => Colors.OrangeRed;
         internal static Color Info => Colors.MediumOrchid;
-        internal static Color Verbose => Colors.BlueViolet;
+        internal static Color Verbose => Colors.DarkGray;
         internal static Color Warn => Colors.Goldenrod;
     }
     public class Logger

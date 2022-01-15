@@ -15,15 +15,21 @@ namespace SalesTracker
 {
     public partial class SettingsForm : Form
     {
+        private List<Sale> _saleRange = new List<Sale>();
         public SettingsForm() 
         {
             InitializeComponent();
             SetDoubleBuffer(salesDataGrid, true);
+            SetDoubleBuffer(rangeSalesDataGrid, true);
 
             logListBox.DataSource = Logger.LogList;
             salesDataGrid.DataSource = SalesSettings.Instance.Sales;
             salesDataGrid.Columns[0].DefaultCellStyle.Format = "MM'/'dd'/'yy HH:mm";
             salesDataGrid.Columns[4].DefaultCellStyle.Format = "n0";
+            
+            rangeSalesDataGrid.DataSource = _saleRange;
+            rangeSalesDataGrid.Columns[0].DefaultCellStyle.Format = "MM'/'dd'/'yy HH:mm";
+            rangeSalesDataGrid.Columns[4].DefaultCellStyle.Format = "n0";
         }
 
         public void UpdateSalesDgv()
@@ -36,6 +42,7 @@ namespace SalesTracker
                 salesDataGrid.DataSource = SalesSettings.Instance.Sales;
                 salesDataGrid.Update();
                 salesDataGrid.RowHeadersWidthSizeMode = DataGridViewRowHeadersWidthSizeMode.EnableResizing;
+                Task.Run(CalculateStatistics);
             });
         }
 
@@ -67,13 +74,24 @@ namespace SalesTracker
         {
             return await Task.Run(() =>
             {
-                if (!SalesSettings.Instance.Sales.Any()) // e.g. new install
-                    return false; 
+                List<Sale> salesRange;
+                if (fullRangeCheckbox.Checked) // use full date range
+                {
+                    salesRange = SalesSettings.Instance.Sales; // full range
+                }
+                else
+                {
+                    salesRange = _saleRange; // when dates are selected
+                }
+                
+                if (!SalesSettings.Instance.Sales.Any()) // e.g. new install or cleared stats
+                    return false;
 
-                lastSaleLabel.Text = SalesSettings.Instance.Sales.Last().SalesDateTime.ToString("MM/dd/yy HH:mm");
-                salesLabel.Text = SalesSettings.Instance.Sales.Count.ToString();
+                TimeSpan timeElapsed = salesRange.Last().SalesDateTime.Subtract(salesRange.First().SalesDateTime);
+                lastSaleLabel.Text = salesRange.Last().SalesDateTime.ToString("g");
+                salesLabel.Text = salesRange.Count.ToString();
                 int gilSum = 0, itemSum = 0;
-                foreach (Sale sale in SalesSettings.Instance.Sales)
+                foreach (Sale sale in salesRange)
                 {
                     gilSum += sale.SoldPrice;
                     itemSum += sale.AmountSold;
@@ -89,13 +107,9 @@ namespace SalesTracker
                 if (itemSum != 0)
                     gilPerItemLabel.Text = $"{gilSum / (itemSum):n0}"; 
                 gilPerSaleLabel.Text = $"{gilSum / SalesSettings.Instance.Sales.Count:n0}";
-
-                // datetime.last might give 'erroneous' data if it's been a while since a sale occurred
-                var timeElapsed = DateTime.Now
-                                    .Subtract(SalesSettings.Instance.Sales.First().SalesDateTime);
-
+                
                 if (timeElapsed.TotalDays > 0) gilPerDayLabel.Text = timeElapsed.TotalDays < 1 ? $"{gilSum:n0}" : $"{gilSum / timeElapsed.TotalDays:n0}";
-                if(timeElapsed.TotalHours > 0) gilPerHourLabel.Text = $"{gilSum / timeElapsed.TotalHours:n0}";
+                if (timeElapsed.TotalHours > 0) gilPerHourLabel.Text = $"{gilSum / timeElapsed.TotalHours:n0}";
 
                 return true; 
             });
@@ -107,12 +121,49 @@ namespace SalesTracker
             await Task.Run(CalculateStatistics);
         }
 
-        private void timer1_Tick(object sender, EventArgs e) {
-            // update dgv
-            //Logger.Info("Timer Ticked.");
-            logListBox.Update();
-            salesDataGrid.Update(); // Refresh() does not work. maybe Upate() or to simply null it and re-add?
+        private void setDateButton_Click(object sender, EventArgs e) 
+        {
+            // get date range and set list
+            // trigger calculate?
+            // update datagrid
+            fullRangeCheckbox.Checked = false;
+            statsGroupBox.Text = $"Gil Statistics - {startDate.Value.Date.ToString("MM/dd/yy")} to {endDate.Value.Date.ToString("MM/dd/yy")}";
+            
+            _saleRange = SalesSettings.Instance.Sales.Where(x =>
+                x.SalesDateTime.Date <= endDate.Value.Date && x.SalesDateTime.Date >= startDate.Value.Date).ToList();
+            rangeSalesDataGrid.Update();
+            
+            rangeSalesDataGrid.RowHeadersWidthSizeMode = DataGridViewRowHeadersWidthSizeMode.DisableResizing;
+            rangeSalesDataGrid.DataSource = typeof(List<Sale>); // list<sale> or Sale?
+            rangeSalesDataGrid.DataSource = _saleRange;
+            rangeSalesDataGrid.Update();
+            rangeSalesDataGrid.RowHeadersWidthSizeMode = DataGridViewRowHeadersWidthSizeMode.EnableResizing;
+            
+            Task.Run(CalculateStatistics);
+            
         }
 
+        private void fullRangeCheckbox_CheckedChanged(object sender, EventArgs e)
+        {
+            if (fullRangeCheckbox.Checked)
+            {
+                statsGroupBox.Text = $"Gil Statistics - Full Range";
+                _saleRange.Clear();
+                
+                rangeSalesDataGrid.RowHeadersWidthSizeMode = DataGridViewRowHeadersWidthSizeMode.DisableResizing;
+                rangeSalesDataGrid.DataSource = typeof(List<Sale>); // list<sale> or Sale?
+                rangeSalesDataGrid.DataSource = _saleRange;
+                rangeSalesDataGrid.Update();
+                rangeSalesDataGrid.RowHeadersWidthSizeMode = DataGridViewRowHeadersWidthSizeMode.EnableResizing;
+            }
+                
+        }
+
+        private void resetButton_Click(object sender, EventArgs e)
+        {
+            DialogResult dialogResult = MessageBox.Show("This will delete all sales data, are you sure? (Recommend backing up first)", "Data Yeeter", MessageBoxButtons.YesNo);
+            if(dialogResult == DialogResult.Yes)
+                SalesSettings.Instance.Sales.Clear();
+        }
     }
 }

@@ -9,7 +9,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>SalesTracker</RootNamespace>
     <AssemblyName>SalesTracker</AssemblyName>
-    <TargetFrameworkVersion>v4.6.2</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <Deterministic>true</Deterministic>
   </PropertyGroup>
@@ -53,8 +53,8 @@
       <HintPath>..\..\GreyMagic.dll</HintPath>
     </Reference>
     <Reference Include="PresentationCore" />
-    <Reference Include="rebornbuddy">
-      <HintPath>..\..\rebornbuddy.exe</HintPath>
+    <Reference Include="RebornBuddy">
+      <HintPath>..\..\RebornBuddy.exe</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -93,8 +93,4 @@
     <None Include="Properties\DataSources\SettingsForm.datasource" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <PropertyGroup>
-    <PostBuildEvent>call C:\buildtools\SalesTracker.bat
-</PostBuildEvent>
-  </PropertyGroup>
 </Project>
