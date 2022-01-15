@@ -27,7 +27,7 @@ namespace SalesTracker
 
         public override string Name => "Market Board Sales Tracker";
 
-        public override Version Version => new Version(1, 7, 2);
+        public override Version Version => new Version(2, 0, 0);
         public override bool WantButton => true;
         public override string ButtonText => "Log Report";
 
