@@ -100,7 +100,7 @@ namespace SalesTracker
                 totalSoldLabel.Text = itemSum.ToString();
                 gilLabel.Text = gilSum.ToString();
                 if(itemSum > 0) gilPerItemLabel.Text = (gilSum / itemSum).ToString();
-                if(SalesSettings.Instance.Sales.Count > 0 ) gilPerSaleLabel.Text = (gilSum / SalesSettings.Instance.Sales.Count).ToString();
+                if(SalesSettings.Instance.Sales.Count > 0 ) gilPerSaleLabel.Text = (gilSum / salesRange.Count).ToString();
                 
                 totalSoldLabel.Text = $"{itemSum}";
                 gilLabel.Text = $"{gilSum:n0}";
