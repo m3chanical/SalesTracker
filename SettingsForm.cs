@@ -150,11 +150,14 @@ namespace SalesTracker
                 statsGroupBox.Text = $"Gil Statistics - Full Range";
                 _saleRange.Clear();
                 
+                // TODO: break this stuff out to its own function or something. i keep repeating it.
                 rangeSalesDataGrid.RowHeadersWidthSizeMode = DataGridViewRowHeadersWidthSizeMode.DisableResizing;
                 rangeSalesDataGrid.DataSource = typeof(List<Sale>); // list<sale> or Sale?
                 rangeSalesDataGrid.DataSource = _saleRange;
                 rangeSalesDataGrid.Update();
                 rangeSalesDataGrid.RowHeadersWidthSizeMode = DataGridViewRowHeadersWidthSizeMode.EnableResizing;
+
+                Task.Run(CalculateStatistics);
             }
                 
         }
