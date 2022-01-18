@@ -94,7 +94,7 @@ namespace SalesTracker
         {
             while (!botRunning)
             {
-                Pulsator.Pulse(PulseFlags.Chat);
+                Pulsator.Pulse(PulseFlags.All);
                 Thread.Sleep(500);
             }
         }
@@ -113,7 +113,7 @@ namespace SalesTracker
                         Sale sale = new Sale();
                         var groups = match.Groups;
 
-                        sale.SalesDateTime = e.ChatLogEntry.TimeStamp;
+                        sale.SalesDateTime = e.ChatLogEntry.TimeStamp.ToLocalTime();
                         sale.AmountSold = groups[1].ToString() != "" ? int.Parse(groups[1].ToString()) : 1;
                         
                         Item item = GetItemFromBytes(e.ChatLogEntry.Bytes);
