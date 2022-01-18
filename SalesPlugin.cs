@@ -8,9 +8,11 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using ff14bot;
+using ff14bot.Behavior;
 using ff14bot.Objects;
 using Newtonsoft.Json;
 
@@ -30,6 +32,9 @@ namespace SalesTracker
         public override Version Version => new Version(2, 0, 0);
         public override bool WantButton => true;
         public override string ButtonText => "Log Report";
+
+        private static Thread Pulser;
+        private static bool botRunning;
 
         public override void OnButtonPress() 
         {
@@ -55,6 +60,10 @@ namespace SalesTracker
         public override void OnInitialize()
         {
             Logger.Info("Initializing Sales Tracker Plugin");
+            Pulser =  new Thread(PulseThread);
+            TreeRoot.OnStart += OnBotStart;
+            TreeRoot.OnStop += OnBotStop;
+            Pulser.Start();
         }
 
         public override void OnEnabled()
@@ -64,6 +73,30 @@ namespace SalesTracker
         public override void OnDisabled() 
         {
             GamelogManager.MessageRecevied -= GamelogManager_MessageRecevied;
+        }
+
+        private static void OnBotStart(BotBase bot)
+        {
+            Logger.Info($"{bot.Name} Started");
+            botRunning = true;
+            Pulser.Abort();
+        }
+        
+        private static void OnBotStop(BotBase bot)
+        {
+            Logger.Info($"{bot.Name} Stopped");
+            botRunning = false;
+            Pulser =  new Thread(PulseThread);
+            Pulser.Start();
+        }
+
+        private static async void PulseThread()
+        {
+            while (!botRunning)
+            {
+                Pulsator.Pulse(PulseFlags.Chat);
+                Thread.Sleep(500);
+            }
         }
 
         private void GamelogManager_MessageRecevied(object sender, ChatEventArgs e) 
@@ -80,7 +113,7 @@ namespace SalesTracker
                         Sale sale = new Sale();
                         var groups = match.Groups;
 
-                        sale.SalesDateTime = DateTime.Now;
+                        sale.SalesDateTime = e.ChatLogEntry.TimeStamp;
                         sale.AmountSold = groups[1].ToString() != "" ? int.Parse(groups[1].ToString()) : 1;
                         
                         Item item = GetItemFromBytes(e.ChatLogEntry.Bytes);
@@ -90,6 +123,13 @@ namespace SalesTracker
                             sale.ItemId = item.Id;
                             sale.SoldPrice = int.Parse(groups[2].ToString().Replace(",", ""));
                             _gil += sale.SoldPrice;
+                            sale.ByteHashCode = ComputeHash(e.ChatLogEntry.Bytes);
+
+                            if (SalesSettings.Instance.Sales.Contains(sale))
+                            {
+                                Logger.Info($"Sale already in list for {sale.ItemSold}");
+                                return;
+                            }
 
                             Logger.Info($"{sale.AmountSold} x {sale.ItemSold} (Item ID: {sale.ItemId}) sold for {sale.SoldPrice:n0}\n");
                             Logger.Info($"You have made {_saleCount} sales, and {_gil:n0} since starting the bot.");
@@ -143,6 +183,25 @@ namespace SalesTracker
             }
             
             return DataManager.GetItem(itemId, HQ);
+        }
+        
+        public static int ComputeHash(params byte[] data)
+        {
+            unchecked
+            {
+                const int p = 16777619;
+                int hash = (int)2166136261;
+
+                for (int i = 0; i < data.Length; i++)
+                    hash = (hash ^ data[i]) * p;
+
+                hash += hash << 13;
+                hash ^= hash >> 7;
+                hash += hash << 3;
+                hash ^= hash >> 17;
+                hash += hash << 5;
+                return hash;
+            }
         }
     }
 }

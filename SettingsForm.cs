@@ -166,5 +166,7 @@ namespace SalesTracker
             if(dialogResult == DialogResult.Yes)
                 SalesSettings.Instance.Sales.Clear();
         }
+
+
     }
 }
