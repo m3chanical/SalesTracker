@@ -63,6 +63,7 @@ namespace SalesTracker
             Pulser =  new Thread(PulseThread);
             TreeRoot.OnStart += OnBotStart;
             TreeRoot.OnStop += OnBotStop;
+            Pulser.IsBackground = true;
             Pulser.Start();
         }
 
@@ -87,6 +88,7 @@ namespace SalesTracker
             Logger.Info($"{bot.Name} Stopped");
             botRunning = false;
             Pulser =  new Thread(PulseThread);
+            Pulser.IsBackground = true;
             Pulser.Start();
         }
 
