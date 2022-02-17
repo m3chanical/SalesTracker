@@ -149,7 +149,7 @@ namespace SalesTracker
                         }
                         else
                         {
-                            var chatbytes = string.Join(" ", e.ChatLogEntry.Bytes);
+                            var chatbytes = string.Join(" ", e.ChatLogEntry.Bytes.Select(i => $"{i:X2}"));
                             Logger.Verbose($"Chat Log Bytes: {chatbytes}");
                         }
                     }
