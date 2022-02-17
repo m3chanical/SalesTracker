@@ -22,7 +22,7 @@ namespace SalesTracker
         private static List<string> _logList = new List<string>();
         public static List<string> LogList => _logList ?? (_logList = new List<string>());
 
-        internal static bool log_verbose = true;
+        public static bool log_verbose = false;
         internal static string Name => "Sales Report";
         internal static string Prefix => $"[{Name}] ";
         private static void Log(Color c, string message, object[] args) {

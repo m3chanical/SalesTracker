@@ -167,6 +167,9 @@ namespace SalesTracker
                 SalesSettings.Instance.Sales.Clear();
         }
 
-
+        private void verboseCheckbox_CheckedChanged(object sender, EventArgs e)
+        {
+            Logger.log_verbose = verboseCheckbox.Checked;
+        }
     }
 }

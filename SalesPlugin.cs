@@ -29,7 +29,7 @@ namespace SalesTracker
 
         public override string Name => "Market Board Sales Tracker";
 
-        public override Version Version => new Version(2, 0, 0);
+        public override Version Version => new Version(2, 1, 1);
         public override bool WantButton => true;
         public override string ButtonText => "Log Report";
 
@@ -92,6 +92,11 @@ namespace SalesTracker
             Pulser.Start();
         }
 
+        public override void OnShutdown()
+        {
+            Pulser?.Abort();
+        }
+
         private static async void PulseThread()
         {
             while (!botRunning)
@@ -117,7 +122,9 @@ namespace SalesTracker
 
                         sale.SalesDateTime = e.ChatLogEntry.TimeStamp.ToLocalTime();
                         sale.AmountSold = groups[1].ToString() != "" ? int.Parse(groups[1].ToString()) : 1;
+
                         
+
                         Item item = GetItemFromBytes(e.ChatLogEntry.Bytes);
                         if (item != null)
                         {
@@ -142,9 +149,9 @@ namespace SalesTracker
                         }
                         else
                         {
-                            Logger.Error("Could not find item with ");
+                            var chatbytes = string.Join(" ", e.ChatLogEntry.Bytes);
+                            Logger.Verbose($"Chat Log Bytes: {chatbytes}");
                         }
-                        
                     }
                     break;
                 case MessageType.Tell_Receive:
@@ -174,10 +181,16 @@ namespace SalesTracker
             }
             var result = "";
             foreach (var b in newBytes) {
-                result += $"{b:X}";
+                result += $"{b:X2}";
             }
 
-            uint itemId = (uint) int.Parse(result, NumberStyles.HexNumber);
+            uint itemId;
+            if(!uint.TryParse(result, NumberStyles.HexNumber, CultureInfo.InvariantCulture, out itemId))
+            {
+                Logger.Warn($"Failed to parse item from bytes: {result}");
+                return null;
+            }
+
             if (itemId > 1000000)
             {
                 itemId -= 1000000;
