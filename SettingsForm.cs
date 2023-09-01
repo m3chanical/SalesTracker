@@ -10,13 +10,16 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using ff14bot;
 
 namespace SalesTracker
 {
     public partial class SettingsForm : Form
     {
         private List<Sale> _saleRange = new List<Sale>();
-        public SettingsForm() 
+
+        public static SettingsForm Instance { get; set; }
+        public SettingsForm()
         {
             InitializeComponent();
             SetDoubleBuffer(salesDataGrid, true);
@@ -26,10 +29,13 @@ namespace SalesTracker
             salesDataGrid.DataSource = SalesSettings.Instance.Sales;
             salesDataGrid.Columns[0].DefaultCellStyle.Format = "MM'/'dd'/'yy HH:mm";
             salesDataGrid.Columns[4].DefaultCellStyle.Format = "n0";
-            
+
             rangeSalesDataGrid.DataSource = _saleRange;
             rangeSalesDataGrid.Columns[0].DefaultCellStyle.Format = "MM'/'dd'/'yy HH:mm";
             rangeSalesDataGrid.Columns[4].DefaultCellStyle.Format = "n0";
+
+            Text = $"RB Statistics v{SalesPlugin.CurrentVersion} {Core.Me.Name}";
+            Instance = this;
         }
 
         public void UpdateSalesDgv()
@@ -50,12 +56,12 @@ namespace SalesTracker
         {
             typeof(Control).InvokeMember("DoubleBuffered",
                 BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.SetProperty,
-                null, 
-                dataGridView, 
+                null,
+                dataGridView,
                 new object[] {doublebuffered});
         }
 
-        private async void tabControl1_SelectedIndexChanged(object sender, EventArgs e) 
+        private async void tabControl1_SelectedIndexChanged(object sender, EventArgs e)
         {
             switch (tabControl1.SelectedIndex) {
                 case 0: // Statistics page
@@ -83,7 +89,7 @@ namespace SalesTracker
                 {
                     salesRange = _saleRange; // when dates are selected
                 }
-                
+
                 if (!salesRange.Any()) // e.g. new install or cleared stats
                     return false;
 
@@ -103,13 +109,13 @@ namespace SalesTracker
                 totalSoldLabel.Text = $"{itemSum}";
                 gilLabel.Text = $"{gilSum:n0}";
                 if (itemSum > 0)
-                    gilPerItemLabel.Text = $"{gilSum / (itemSum):n0}"; 
+                    gilPerItemLabel.Text = $"{gilSum / (itemSum):n0}";
                 gilPerSaleLabel.Text = $"{gilSum / salesRange.Count:n0}";
-                
+
                 if (timeElapsed.TotalDays > 0) gilPerDayLabel.Text = timeElapsed.TotalDays < 1 ? $"{gilSum:n0}" : $"{gilSum / timeElapsed.TotalDays:n0}";
                 if (timeElapsed.TotalHours > 0) gilPerHourLabel.Text = $"{gilSum / timeElapsed.TotalHours:n0}";
 
-                return true; 
+                return true;
             });
         }
 
@@ -119,26 +125,26 @@ namespace SalesTracker
             await Task.Run(CalculateStatistics);
         }
 
-        private void setDateButton_Click(object sender, EventArgs e) 
+        private void setDateButton_Click(object sender, EventArgs e)
         {
             // get date range and set list
             // trigger calculate?
             // update datagrid
             fullRangeCheckbox.Checked = false;
             statsGroupBox.Text = $"Gil Statistics - {startDate.Value.Date.ToString("MM/dd/yy")} to {endDate.Value.Date.ToString("MM/dd/yy")}";
-            
+
             _saleRange = SalesSettings.Instance.Sales.Where(x =>
                 x.SalesDateTime.Date <= endDate.Value.Date && x.SalesDateTime.Date >= startDate.Value.Date).ToList();
             rangeSalesDataGrid.Update();
-            
+
             rangeSalesDataGrid.RowHeadersWidthSizeMode = DataGridViewRowHeadersWidthSizeMode.DisableResizing;
             rangeSalesDataGrid.DataSource = typeof(List<Sale>); // list<sale> or Sale?
             rangeSalesDataGrid.DataSource = _saleRange;
             rangeSalesDataGrid.Update();
             rangeSalesDataGrid.RowHeadersWidthSizeMode = DataGridViewRowHeadersWidthSizeMode.EnableResizing;
-            
+
             Task.Run(CalculateStatistics);
-            
+
         }
 
         private void fullRangeCheckbox_CheckedChanged(object sender, EventArgs e)
@@ -147,7 +153,7 @@ namespace SalesTracker
             {
                 statsGroupBox.Text = $"Gil Statistics - Full Range";
                 _saleRange.Clear();
-                
+
                 // TODO: break this stuff out to its own function or something. i keep repeating it.
                 rangeSalesDataGrid.RowHeadersWidthSizeMode = DataGridViewRowHeadersWidthSizeMode.DisableResizing;
                 rangeSalesDataGrid.DataSource = typeof(List<Sale>); // list<sale> or Sale?
@@ -157,7 +163,7 @@ namespace SalesTracker
 
                 Task.Run(CalculateStatistics);
             }
-                
+
         }
 
         private void resetButton_Click(object sender, EventArgs e)

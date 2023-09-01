@@ -1,222 +1,164 @@
-﻿using ff14bot.AClasses;
-using ff14bot.Enums;
-using ff14bot.Managers;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
-using System.IO;
 using System.Linq;
-using System.Text;
 using System.Text.RegularExpressions;
-using System.Threading;
-using System.Threading.Tasks;
-using System.Windows.Forms;
-using ff14bot;
+using System.Windows.Media;
 using ff14bot.Behavior;
-using ff14bot.Objects;
-using Newtonsoft.Json;
+using ff14bot.Enums;
+using ff14bot.Managers;
+using LlamaLibrary;
 
-namespace SalesTracker
+namespace SalesTracker;
+
+public class SalesPlugin : TemplatePlugin
 {
-    public class SalesPlugin : BotPlugin
+    private readonly Regex _mbRegex = new Regex(@"The (\d{0,3}).+sold for ([\d,]+) gil", RegexOptions.Compiled);
+    private int _gil;
+    private int _saleCount;
+
+    public override string PluginName => "Market Board Sales Tracker";
+
+    public override string Author => "Sinbeard";
+
+    //protected override Color LogColor =>
+    protected override Type SettingsForm => typeof(SettingsForm);
+    protected override bool RequiresPulseThread => true;
+    protected override PulseFlags PulseFlags => PulseFlags.Chat;
+    public static Version CurrentVersion => new Version(2, 2, 0);
+    public override Version Version => CurrentVersion;
+    public override bool WantButton => true;
+    public override string ButtonText => "Log Report";
+
+    public override void OnEnabled()
     {
-        private int _saleCount;
-        private int _gil;
-        private readonly Regex _mbRegex = new Regex(@"The (\d{0,3}).+sold for ([\d,]+) gil", RegexOptions.Compiled); 
-        private SettingsForm _form;
+        base.OnEnabled();
+        GamelogManager.MessageRecevied += GamelogManager_MessageRecevied;
+    }
 
-        public override string Author => "Sinbeard";
+    public override void OnDisabled()
+    {
+        base.OnDisabled();
+        GamelogManager.MessageRecevied -= GamelogManager_MessageRecevied;
+    }
 
-        public override string Name => "Market Board Sales Tracker";
-
-        public override Version Version => new Version(2, 1, 1);
-        public override bool WantButton => true;
-        public override string ButtonText => "Log Report";
-
-        private static Thread Pulser;
-        private static bool botRunning;
-
-        public override void OnButtonPress() 
+    private void GamelogManager_MessageRecevied(object sender, ChatEventArgs e)
+    {
+        switch (e.ChatLogEntry.MessageType)
         {
-            if (_form == null)
-            {
-                _form = new SettingsForm()
+            case MessageType.RetainerSaleReports:
+                //Log.Information("Retainer sale report.");
+                var match = _mbRegex.Match(e.ChatLogEntry.Contents);
+                if (match.Success)
                 {
-                    Text = $"RB Statistics v{Version} {Core.Me.Name}",
-                    
-                };
-                _form.Closed += (o, e) => { _form = null; };
-            }
-            try
-            {
-                _form.Show();
-            }
-            catch (Exception e)
-            {
-                MessageBox.Show(e.Message);
-            }
-        }
+                    Log.Information("Market Board sale made.");
+                    _saleCount++;
+                    var sale = new Sale();
+                    var groups = match.Groups;
 
-        public override void OnInitialize()
-        {
-            Logger.Info("Initializing Sales Tracker Plugin");
-            Pulser =  new Thread(PulseThread);
-            TreeRoot.OnStart += OnBotStart;
-            TreeRoot.OnStop += OnBotStop;
-            Pulser.IsBackground = true;
-            Pulser.Start();
-        }
+                    sale.SalesDateTime = e.ChatLogEntry.TimeStamp.ToLocalTime();
+                    sale.AmountSold = groups[1].ToString() != "" ? int.Parse(groups[1].ToString()) : 1;
 
-        public override void OnEnabled()
-        {
-            GamelogManager.MessageRecevied += GamelogManager_MessageRecevied;
-        }
-        public override void OnDisabled() 
-        {
-            GamelogManager.MessageRecevied -= GamelogManager_MessageRecevied;
-        }
-
-        private static void OnBotStart(BotBase bot)
-        {
-            Logger.Info($"{bot.Name} Started");
-            botRunning = true;
-            Pulser.Abort();
-        }
-        
-        private static void OnBotStop(BotBase bot)
-        {
-            Logger.Info($"{bot.Name} Stopped");
-            botRunning = false;
-            Pulser =  new Thread(PulseThread);
-            Pulser.IsBackground = true;
-            Pulser.Start();
-        }
-
-        public override void OnShutdown()
-        {
-            Pulser?.Abort();
-        }
-
-        private static async void PulseThread()
-        {
-            while (!botRunning)
-            {
-                Pulsator.Pulse(PulseFlags.All);
-                Thread.Sleep(500);
-            }
-        }
-
-        private void GamelogManager_MessageRecevied(object sender, ChatEventArgs e) 
-        {
-            switch(e.ChatLogEntry.MessageType)
-            {
-                case MessageType.RetainerSaleReports:
-                    Logger.Info("Market Board sale made.");
-
-                    var match = _mbRegex.Match(e.ChatLogEntry.Contents);
-                    if (match.Success)
+                    var item = GetItemFromBytes(e.ChatLogEntry.Bytes);
+                    if (item != null)
                     {
-                        _saleCount++;
-                        Sale sale = new Sale();
-                        var groups = match.Groups;
+                        sale.ItemSold = item.CurrentLocaleName;
+                        sale.ItemId = item.Id;
+                        sale.SoldPrice = int.Parse(groups[2].ToString().Replace(",", ""));
+                        _gil += sale.SoldPrice;
+                        sale.ByteHashCode = ComputeHash(e.ChatLogEntry.Bytes);
 
-                        sale.SalesDateTime = e.ChatLogEntry.TimeStamp.ToLocalTime();
-                        sale.AmountSold = groups[1].ToString() != "" ? int.Parse(groups[1].ToString()) : 1;
-
-                        
-
-                        Item item = GetItemFromBytes(e.ChatLogEntry.Bytes);
-                        if (item != null)
+                        if (SalesSettings.Instance.Sales.Contains(sale))
                         {
-                            sale.ItemSold = item.CurrentLocaleName;
-                            sale.ItemId = item.Id;
-                            sale.SoldPrice = int.Parse(groups[2].ToString().Replace(",", ""));
-                            _gil += sale.SoldPrice;
-                            sale.ByteHashCode = ComputeHash(e.ChatLogEntry.Bytes);
-
-                            if (SalesSettings.Instance.Sales.Contains(sale))
-                            {
-                                Logger.Info($"Sale already in list for {sale.ItemSold}");
-                                return;
-                            }
-
-                            Logger.Info($"{sale.AmountSold} x {sale.ItemSold} (Item ID: {sale.ItemId}) sold for {sale.SoldPrice:n0}\n");
-                            Logger.Info($"You have made {_saleCount} sales, and {_gil:n0} since starting the bot.");
-
-                            SalesSettings.Instance.Sales.Add(sale); 
-                            SalesSettings.Instance.Save();
-                            _form?.UpdateSalesDgv();
+                            Log.Information($"Sale already in list for {sale.ItemSold}");
+                            return;
                         }
-                        else
-                        {
-                            var chatbytes = string.Join(" ", e.ChatLogEntry.Bytes.Select(i => $"{i:X2}"));
-                            Logger.Verbose($"Chat Log Bytes: {chatbytes}");
-                        }
+
+                        Log.Information($"{sale.AmountSold} x {sale.ItemSold} (Item ID: {sale.ItemId}) sold for {sale.SoldPrice:n0}");
+                        Log.Information($"You have made {_saleCount} sales, and {_gil:n0} since starting the bot.");
+
+                        SalesSettings.Instance.Sales.Add(sale);
+                        SalesSettings.Instance.Save();
+                        SalesTracker.SettingsForm.Instance?.UpdateSalesDgv();
                     }
-                    break;
-                case MessageType.Tell_Receive:
-                    Logger.Info($"Tell received from {e.ChatLogEntry.SenderDisplayName}.");
-                    Logger.Info($"Tell text: {e.ChatLogEntry.Contents}");
-                    break;
-            }      
-        }
-
-        private Item GetItemFromBytes(IReadOnlyList<byte> itemBytes)
-        {
-            List<byte> newBytes = new List<byte>();
-            bool HQ = false;
-            for (var x = 0; x < itemBytes.Count(); x++) {
-                switch (itemBytes[x]) {
-                    case 2:
-                        // special in-game replacements/wrappers
-                        // 2 46 5 7 242 2 210 3
-                        // 2 29 1 3
-                        // remove them
-                        if (itemBytes[x + 1] == 0x27 && itemBytes[x + 3] == 0x03) {
-                            var length = itemBytes[x + 2];
-                            newBytes.AddRange(itemBytes.Skip(x + 5).Take(length - 5));
-                        }
-                        break;
+                    else
+                    {
+                        var chatbytes = string.Join(" ", e.ChatLogEntry.Bytes.Select(i => $"{i:X2}"));
+                        Logger.Verbose($"Chat Log Bytes: {chatbytes}");
+                    }
                 }
-            }
-            var result = "";
-            foreach (var b in newBytes) {
-                result += $"{b:X2}";
-            }
 
-            uint itemId;
-            if(!uint.TryParse(result, NumberStyles.HexNumber, CultureInfo.InvariantCulture, out itemId))
-            {
-                Logger.Warn($"Failed to parse item from bytes: {result}");
-                return null;
-            }
-
-            if (itemId > 1000000)
-            {
-                itemId -= 1000000;
-                HQ = true;
-            }
-            
-            return DataManager.GetItem(itemId, HQ);
+                break;
+            case MessageType.Tell_Receive:
+                Log.Information($"Tell received from {e.ChatLogEntry.SenderDisplayName}.");
+                Log.Information($"Tell text: {e.ChatLogEntry.Contents}");
+                break;
         }
-        
-        public static int ComputeHash(params byte[] data)
+    }
+
+    private Item GetItemFromBytes(IReadOnlyList<byte> itemBytes)
+    {
+        var newBytes = new List<byte>();
+        var HQ = false;
+        for (var x = 0; x < itemBytes.Count(); x++)
         {
-            unchecked
+            switch (itemBytes[x])
             {
-                const int p = 16777619;
-                int hash = (int)2166136261;
+                case 2:
+                    // special in-game replacements/wrappers
+                    // 2 46 5 7 242 2 210 3
+                    // 2 29 1 3
+                    // remove them
+                    if (itemBytes[x + 1] == 0x27 && itemBytes[x + 3] == 0x03)
+                    {
+                        var length = itemBytes[x + 2];
+                        newBytes.AddRange(itemBytes.Skip(x + 5).Take(length - 5));
+                    }
 
-                for (int i = 0; i < data.Length; i++)
-                    hash = (hash ^ data[i]) * p;
-
-                hash += hash << 13;
-                hash ^= hash >> 7;
-                hash += hash << 3;
-                hash ^= hash >> 17;
-                hash += hash << 5;
-                return hash;
+                    break;
             }
+        }
+
+        var result = "";
+        foreach (var b in newBytes)
+        {
+            result += $"{b:X2}";
+        }
+
+        uint itemId;
+        if (!uint.TryParse(result, NumberStyles.HexNumber, CultureInfo.InvariantCulture, out itemId))
+        {
+            Log.Error($"Failed to parse item from bytes: {result}");
+            return null;
+        }
+
+        if (itemId > 1000000)
+        {
+            itemId -= 1000000;
+            HQ = true;
+        }
+
+        return DataManager.GetItem(itemId, HQ);
+    }
+
+    public static int ComputeHash(params byte[] data)
+    {
+        unchecked
+        {
+            const int p = 16777619;
+            var hash = (int)2166136261;
+
+            for (var i = 0; i < data.Length; i++)
+            {
+                hash = (hash ^ data[i]) * p;
+            }
+
+            hash += hash << 13;
+            hash ^= hash >> 7;
+            hash += hash << 3;
+            hash ^= hash >> 17;
+            hash += hash << 5;
+            return hash;
         }
     }
 }
