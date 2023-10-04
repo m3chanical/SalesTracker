@@ -28,7 +28,7 @@ public class SalesPlugin : TemplatePlugin
     public static Version CurrentVersion => new Version(2, 2, 0);
     public override Version Version => CurrentVersion;
     public override bool WantButton => true;
-    public override string ButtonText => "Log Report";
+    public override string ButtonText => "Sales Report";
 
     public override void OnEnabled()
     {
@@ -51,7 +51,6 @@ public class SalesPlugin : TemplatePlugin
                 var match = _mbRegex.Match(e.ChatLogEntry.Contents);
                 if (match.Success)
                 {
-                    Log.Information("Market Board sale made.");
                     _saleCount++;
                     var sale = new Sale();
                     var groups = match.Groups;
@@ -59,86 +58,82 @@ public class SalesPlugin : TemplatePlugin
                     sale.SalesDateTime = e.ChatLogEntry.TimeStamp.ToLocalTime();
                     sale.AmountSold = groups[1].ToString() != "" ? int.Parse(groups[1].ToString()) : 1;
 
-                    var item = GetItemFromBytes(e.ChatLogEntry.Bytes);
-                    if (item != null)
+                    var item = GetItemFromBytes(e.ChatLogEntry.Bytes);  
+                    sale.ItemSold = item?.CurrentLocaleName ?? "Unknown";
+                    sale.ItemId = item?.Id ?? 0;
+                    sale.SoldPrice = int.Parse(groups[2].ToString().Replace(",", ""));
+                    _gil += sale.SoldPrice;
+                    sale.ByteHashCode = ComputeHash(e.ChatLogEntry.Bytes);
+
+                    if (SalesSettings.Instance.Sales.Contains(sale))
                     {
-                        sale.ItemSold = item.CurrentLocaleName;
-                        sale.ItemId = item.Id;
-                        sale.SoldPrice = int.Parse(groups[2].ToString().Replace(",", ""));
-                        _gil += sale.SoldPrice;
-                        sale.ByteHashCode = ComputeHash(e.ChatLogEntry.Bytes);
-
-                        if (SalesSettings.Instance.Sales.Contains(sale))
-                        {
-                            Log.Information($"Sale already in list for {sale.ItemSold}");
-                            return;
-                        }
-
-                        Log.Information($"{sale.AmountSold} x {sale.ItemSold} (Item ID: {sale.ItemId}) sold for {sale.SoldPrice:n0}");
-                        Log.Information($"You have made {_saleCount} sales, and {_gil:n0} since starting the bot.");
-
-                        SalesSettings.Instance.Sales.Add(sale);
-                        SalesSettings.Instance.Save();
-                        SalesTracker.SettingsForm.Instance?.UpdateSalesDgv();
+                        Log.Information($"Sale already in list for {sale.ItemSold}");
+                        return;
                     }
-                    else
-                    {
-                        var chatbytes = string.Join(" ", e.ChatLogEntry.Bytes.Select(i => $"{i:X2}"));
-                        Logger.Verbose($"Chat Log Bytes: {chatbytes}");
-                    }
+
+                    Log.Information($"{sale.AmountSold} x {sale.ItemSold} (Item ID: {sale.ItemId}) sold for {sale.SoldPrice:n0}");
+                    Log.Information($"You have made {_saleCount} sales, and {_gil:n0} since starting the bot.");
+
+                    SalesSettings.Instance.Sales.Add(sale);
+                    SalesSettings.Instance.Save();
+                    SalesTracker.SettingsForm.Instance?.UpdateSalesDgv();
+
                 }
 
                 break;
-            case MessageType.Tell_Receive:
+            /*case MessageType.Tell_Receive:
                 Log.Information($"Tell received from {e.ChatLogEntry.SenderDisplayName}.");
                 Log.Information($"Tell text: {e.ChatLogEntry.Contents}");
-                break;
+                break;*/
         }
     }
 
     private Item GetItemFromBytes(IReadOnlyList<byte> itemBytes)
     {
-        var newBytes = new List<byte>();
         var HQ = false;
+        uint itemId = 0;
         for (var x = 0; x < itemBytes.Count(); x++)
         {
             switch (itemBytes[x])
             {
                 case 2:
-                    // special in-game replacements/wrappers
-                    // 2 46 5 7 242 2 210 3
-                    // 2 29 1 3
-                    // remove them
-                    if (itemBytes[x + 1] == 0x27 && itemBytes[x + 3] == 0x03)
+                    // 0x02 -> StartByte
+                    // 0x27 -> Interactable
+                    // 0xXX -> Chunk Length
+                    // 0x03 -> ItemLink
+                    if (itemBytes[x + 1] == 0x27 && itemBytes[x + 3] == 0x03) // yeah it's a little hacky, shush.
                     {
-                        var length = itemBytes[x + 2];
-                        newBytes.AddRange(itemBytes.Skip(x + 5).Take(length - 5));
+                        //uint chunkLength = GetInteger(itemBytes, x + 2);
+                        itemId = GetInteger(itemBytes, x + 4); // set position past the ItemLink marker
                     }
 
                     break;
             }
         }
-
-        var result = "";
-        foreach (var b in newBytes)
-        {
-            result += $"{b:X2}";
-        }
-
-        uint itemId;
-        if (!uint.TryParse(result, NumberStyles.HexNumber, CultureInfo.InvariantCulture, out itemId))
-        {
-            Log.Error($"Failed to parse item from bytes: {result}");
-            return null;
-        }
-
+        // Could Add collectable/event: https://github.com/goatcorp/Dalamud/blob/47cf3170fe0e58a305fab8a7ba5c429f0871bf45/Dalamud/Game/Text/SeStringHandling/Payloads/ItemPayload.cs#L273
         if (itemId > 1000000)
         {
             itemId -= 1000000;
             HQ = true;
         }
-
         return DataManager.GetItem(itemId, HQ);
+    }
+
+    private static uint GetInteger(IReadOnlyList<byte> itemBytes, int chunkPos)
+    {
+        // https://github.com/goatcorp/Dalamud/blob/47cf3170fe0e58a305fab8a7ba5c429f0871bf45/Dalamud/Game/Text/SeStringHandling/Payload.cs#L364
+        uint marker = itemBytes[chunkPos];
+        if (marker < 0xD0)
+            return marker - 1;
+
+        marker = (marker + 1) & 0b1111;
+        var ret = new byte[4];
+        for (var i = 3; i >= 0; i--)
+        {
+            ret[i] = (marker & (1 << i)) == 0 ? (byte)0 : itemBytes[chunkPos + (3 - i)];
+        }
+
+        return BitConverter.ToUInt32(ret, 0);
     }
 
     public static int ComputeHash(params byte[] data)
