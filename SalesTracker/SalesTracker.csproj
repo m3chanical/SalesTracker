@@ -1,0 +1,27 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net8.0-windows</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+    </PropertyGroup>
+    
+    <PropertyGroup>
+        <ApplicationIcon>shipsilhouette_BXi_icon.ico</ApplicationIcon>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="C:\Users\ad0ra\Downloads\Rebornbuddy64 1.0.554.0\Quest Behaviors\__LlamaLibrary\LlamaLibrary.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <PackageReference Include="RebornBuddy.ReferenceAssemblies" Version="1.0.658" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Compile Update="SettingsForm.cs">
+        <SubType>Form</SubType>
+      </Compile>
+    </ItemGroup>
+
+</Project>

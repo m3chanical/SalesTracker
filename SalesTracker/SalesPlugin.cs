@@ -13,23 +13,20 @@ namespace SalesTracker;
 
 public class SalesPlugin : TemplatePlugin
 {
-    private readonly Regex _mbRegex = new Regex(@"The (\d{0,3}).+sold for ([\d,]+) gil", RegexOptions.Compiled);
-    private int _gil;
-    private int _saleCount;
-
-    public override string PluginName => "Market Board Sales Tracker";
-
-    public override string Author => "Sinbeard";
-
-    //protected override Color LogColor =>
+    public override string Author { get; } = "Sinbeard";
+    public static Version CurrentVersion => new Version(3, 0, 0);
+    public override Version Version { get; } = CurrentVersion;
+    public override string PluginName { get; } = "Market Board Sales Tracker";
+    public override bool WantButton => true;
+    public override string ButtonText => "Sales Report";
     protected override Type SettingsForm => typeof(SettingsForm);
     protected override bool RequiresPulseThread => true;
     protected override PulseFlags PulseFlags => PulseFlags.Chat;
-    public static Version CurrentVersion => new Version(2, 2, 0);
-    public override Version Version => CurrentVersion;
-    public override bool WantButton => true;
-    public override string ButtonText => "Sales Report";
-
+    
+    private readonly Regex _mbRegex = new Regex(@"The (\d{0,3}).+sold for ([\d,]+) gil", RegexOptions.Compiled);
+    private int _gil;
+    private int _saleCount;
+    
     public override void OnEnabled()
     {
         base.OnEnabled();
@@ -57,23 +54,25 @@ public class SalesPlugin : TemplatePlugin
 
                     sale.SalesDateTime = e.ChatLogEntry.TimeStamp.ToLocalTime();
                     sale.AmountSold = groups[1].ToString() != "" ? int.Parse(groups[1].ToString()) : 1;
+                    var chatBytes = string.Join(" ", e.ChatLogEntry.Bytes.Select(i => $"{i:X2}"));
+                    //Log.Information($"Chat Log Bytes: {chatBytes}");
 
                     var item = GetItemFromBytes(e.ChatLogEntry.Bytes);  
-                    sale.ItemSold = item?.CurrentLocaleName ?? "Unknown";
+                    sale.ItemSold = item.CurrentLocaleName ?? "Unknown";
                     sale.ItemId = item?.Id ?? 0;
                     sale.SoldPrice = int.Parse(groups[2].ToString().Replace(",", ""));
                     _gil += sale.SoldPrice;
                     sale.ByteHashCode = ComputeHash(e.ChatLogEntry.Bytes);
-
+                    
                     if (SalesSettings.Instance.Sales.Contains(sale))
                     {
                         Log.Information($"Sale already in list for {sale.ItemSold}");
                         return;
                     }
-
+                    
                     Log.Information($"{sale.AmountSold} x {sale.ItemSold} (Item ID: {sale.ItemId}) sold for {sale.SoldPrice:n0}");
                     Log.Information($"You have made {_saleCount} sales, and {_gil:n0} since starting the bot.");
-
+                    
                     SalesSettings.Instance.Sales.Add(sale);
                     SalesSettings.Instance.Save();
                     SalesTracker.SettingsForm.Instance?.UpdateSalesDgv();
@@ -90,6 +89,7 @@ public class SalesPlugin : TemplatePlugin
 
     private Item GetItemFromBytes(IReadOnlyList<byte> itemBytes)
     {
+        var newBytes = new List<byte>();
         var HQ = false;
         uint itemId = 0;
         for (var x = 0; x < itemBytes.Count(); x++)
@@ -101,12 +101,15 @@ public class SalesPlugin : TemplatePlugin
                     // 0x27 -> Interactable
                     // 0xXX -> Chunk Length
                     // 0x03 -> ItemLink
-                    if (itemBytes[x + 1] == 0x27 && itemBytes[x + 3] == 0x03) // yeah it's a little hacky, shush.
+                    if (itemBytes[x + 1] == 0x27 && itemBytes[x + 3] == 0x03)
                     {
-                        //uint chunkLength = GetInteger(itemBytes, x + 2);
-                        itemId = GetInteger(itemBytes, x + 4); // set position past the ItemLink marker
+                        // get length of chunk so we can pull it out
+                        var chunkLength = GetInteger(itemBytes, x + 2);
+                        
+                        // grab only the chunk we need (mostly for debug purposes)
+                        var chunk = itemBytes.Skip(x + 1).Take((int)chunkLength).ToList();
+                        itemId = GetInteger(chunk, 3); // skip to marker byte, start from there
                     }
-
                     break;
             }
         }
@@ -128,11 +131,27 @@ public class SalesPlugin : TemplatePlugin
 
         marker = (marker + 1) & 0b1111;
         var ret = new byte[4];
+        var k = 1; // past marker byte to item bytes
         for (var i = 3; i >= 0; i--)
         {
-            ret[i] = (marker & (1 << i)) == 0 ? (byte)0 : itemBytes[chunkPos + (3 - i)];
+            try
+            {
+                // can't duplicate dalamud exactly since i'm not using binaryreader
+                if((marker & (1 << i)) == 0)
+                {
+                    ret[i] = 0;
+                }
+                else
+                {
+                    ret[i] = itemBytes[chunkPos + k];
+                    k++;
+                }
+            }
+            catch (ArgumentOutOfRangeException)
+            {
+                // just in case
+            }
         }
-
         return BitConverter.ToUInt32(ret, 0);
     }
 
