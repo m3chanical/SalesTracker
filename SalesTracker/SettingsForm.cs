@@ -40,6 +40,7 @@ public partial class SettingsForm : Form
 
     public void UpdateSalesDgv()
     {
+        if (!IsHandleCreated) return;
         salesDataGrid.BeginInvoke((Action) delegate
         {
             //Logger.Info("Begun Invoke for Dgv");

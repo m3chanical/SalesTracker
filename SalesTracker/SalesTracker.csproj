@@ -2,12 +2,8 @@
 
     <PropertyGroup>
         <TargetFramework>net8.0-windows</TargetFramework>
-        <ImplicitUsings>enable</ImplicitUsings>
+        <ImplicitUsings>disable</ImplicitUsings>
         <Nullable>enable</Nullable>
-    </PropertyGroup>
-    
-    <PropertyGroup>
-        <ApplicationIcon>shipsilhouette_BXi_icon.ico</ApplicationIcon>
     </PropertyGroup>
 
     <ItemGroup>
